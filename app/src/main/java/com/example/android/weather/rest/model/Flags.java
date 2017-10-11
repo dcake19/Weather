@@ -1,0 +1,55 @@
+
+package com.example.android.weather.rest.model;
+
+import java.util.List;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
+public class Flags {
+
+    @SerializedName("sources")
+    @Expose
+    private List<String> sources = null;
+    @SerializedName("datapoint-stations")
+    @Expose
+    private List<String> datapointStations = null;
+    @SerializedName("isd-stations")
+    @Expose
+    private List<String> isdStations = null;
+    @SerializedName("units")
+    @Expose
+    private String units;
+
+    public List<String> getSources() {
+        return sources;
+    }
+
+    public void setSources(List<String> sources) {
+        this.sources = sources;
+    }
+
+    public List<String> getDatapointStations() {
+        return datapointStations;
+    }
+
+    public void setDatapointStations(List<String> datapointStations) {
+        this.datapointStations = datapointStations;
+    }
+
+    public List<String> getIsdStations() {
+        return isdStations;
+    }
+
+    public void setIsdStations(List<String> isdStations) {
+        this.isdStations = isdStations;
+    }
+
+    public String getUnits() {
+        return units;
+    }
+
+    public void setUnits(String units) {
+        this.units = units;
+    }
+
+}
