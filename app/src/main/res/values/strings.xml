@@ -7,7 +7,8 @@
     <string name="wind_speed_units">m/s</string>
     <string name="humidity">Humidity:</string>
     <string name="chance">chance of</string>
-
+    <string name="weather_for_next">Weather for next</string>
+    <string name="days">days</string>
 
     <string name="save_location">Save\nLocation</string>
     <string name="display_number_days">Days</string>

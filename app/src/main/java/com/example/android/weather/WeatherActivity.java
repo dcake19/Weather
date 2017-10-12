@@ -103,7 +103,10 @@ public class WeatherActivity extends AppCompatActivity implements WeatherContrac
     @OnClick(R.id.btn_share)
     public void share(){
         FragmentManager fm = this.getSupportFragmentManager();
-        ShareDialog shareDialog = new ShareDialog();
+        int days = mSpinnerDays.getSelectedItemPosition()+1;
+        ShareDialog shareDialog = new ShareDialog(
+                mPresenter.getShareSubject(getBaseContext(),days),
+                mPresenter.getShareBodyDaily(getBaseContext(),days));
         shareDialog.show(fm,"dialog_share");
     }
 

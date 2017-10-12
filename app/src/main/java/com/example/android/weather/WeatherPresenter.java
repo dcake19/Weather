@@ -109,12 +109,12 @@ public class WeatherPresenter implements WeatherContract.Presenter {
 
     @Override
     public String getHighTemp(Context context, int position) {
-        return context.getString(R.string.high) + " " + mDaily.getData().get(position+1).getTemperatureHigh();
+        return context.getString(R.string.high) + " " + mDaily.getData().get(position+1).getTemperatureHigh() + "\u2103";
     }
 
     @Override
     public String getLowTemp(Context context,int position) {
-        return context.getString(R.string.low) + " " + mDaily.getData().get(position+1).getTemperatureLow();
+        return context.getString(R.string.low) + " " + mDaily.getData().get(position+1).getTemperatureLow()  + "\u2103";
     }
 
     @Override
@@ -128,12 +128,26 @@ public class WeatherPresenter implements WeatherContract.Presenter {
     public String getHumidityDaily(Context context,int position) {
         return context.getString(R.string.humidity)
                 + " " + mDaily.getData().get(position+1).getHumidity()
-                + "%";
+                + "\u0025";
     }
 
     @Override
     public String getPrecipDaily(Context context,int position) {
-        return mDaily.getData().get(position+1).getPrecipProbability() + "%"
+        String chance = Double.toString(mDaily.getData().get(position+1).getPrecipProbability()*100);
+        return chance + "\u0025"
+                + " " +context.getString(R.string.chance)
+                + " " + mDaily.getData().get(position+1).getPrecipType();
+    }
+
+    private String getHumidityDailyEmail(Context context,int position) {
+        return context.getString(R.string.humidity)
+                + " " + mDaily.getData().get(position+1).getHumidity()
+                + " pct.";
+    }
+
+    private String getPrecipDailyEmail(Context context,int position) {
+        String chance = Double.toString(mDaily.getData().get(position+1).getPrecipProbability()*100);
+        return chance + " pct."
                 + " " +context.getString(R.string.chance)
                 + " " + mDaily.getData().get(position+1).getPrecipType();
     }
@@ -162,6 +176,30 @@ public class WeatherPresenter implements WeatherContract.Presenter {
     @Override
     public void saveLocation(String locationName) {
 
+    }
+
+    @Override
+    public String getShareSubject(Context context, int days) {
+        return context.getString(R.string.weather_for_next) + " " + days + " " + context.getString(R.string.days);
+    }
+
+
+    @Override
+    public String getShareBodyDaily(Context context,int days) {
+        StringBuilder shareBody = new StringBuilder();
+
+        for(int i=0;i<days;i++) {
+            shareBody.append(getDate(i)+"\n");
+            shareBody.append(getSummaryDaily(i)+"\n");
+            shareBody.append(getHighTemp(context,i)+"\n");
+            shareBody.append(getLowTemp(context,i)+"\n");
+            shareBody.append(getWindSpeedDaily(context,i)+"\n");
+            shareBody.append(getHumidityDailyEmail(context,i)+"\n");
+            shareBody.append(getPrecipDailyEmail(context,i)+"\n");
+            shareBody.append("\n");
+        }
+
+        return shareBody.toString();
     }
 
     private int weatherIcon(String icon){
