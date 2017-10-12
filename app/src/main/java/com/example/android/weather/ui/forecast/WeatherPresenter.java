@@ -1,10 +1,12 @@
-package com.example.android.weather;
+package com.example.android.weather.ui.forecast;
 
 
 import android.content.Context;
 import android.util.Log;
 
+import com.example.android.weather.R;
 import com.example.android.weather.db.WeatherRepository;
+import com.example.android.weather.ui.forecast.WeatherContract;
 import com.example.android.weather.rest.ApiService;
 import com.example.android.weather.rest.ApiUtils;
 import com.example.android.weather.rest.model.Daily;
@@ -12,7 +14,6 @@ import com.example.android.weather.rest.model.Hourly;
 import com.example.android.weather.rest.model.WeatherForecast;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 
 import io.reactivex.Observer;
@@ -42,7 +43,6 @@ public class WeatherPresenter implements WeatherContract.Presenter {
         mLongitude = 0.1278;
         mStringLatitude = "52.2053";
         mStringLongitude = "0.1218";
-        mRepository.getLoactions();
     }
 
 

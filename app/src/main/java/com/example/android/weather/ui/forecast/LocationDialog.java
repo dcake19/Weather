@@ -1,4 +1,4 @@
-package com.example.android.weather;
+package com.example.android.weather.ui.forecast;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -9,8 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
+
+import com.example.android.weather.R;
 
 @SuppressLint("ValidFragment")
 public class LocationDialog extends DialogFragment implements View.OnClickListener{

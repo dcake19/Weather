@@ -4,6 +4,7 @@ import com.example.android.weather.db.WeatherDbContract.*;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 
 import java.util.ArrayList;
 
@@ -33,6 +34,7 @@ public class WeatherRepository {
 
         while (cursor.moveToNext()){
             locations.add(new Location(
+                    cursor.getInt(cursor.getColumnIndex(LocationsEntry._ID)),
                     cursor.getString(cursor.getColumnIndex(LocationsEntry.COLUMN_NAME)),
                     cursor.getDouble(cursor.getColumnIndex(LocationsEntry.COLUMN_LATITUDE)),
                     cursor.getDouble(cursor.getColumnIndex(LocationsEntry.COLUMN_LONGITUDE)),
@@ -42,6 +44,23 @@ public class WeatherRepository {
         cursor.close();
 
         return locations;
+    }
+
+    public void delete(int id){
+        String[] selectionArgs = {String.valueOf(id)};
+        String where = LocationsEntry._ID + "=?";
+        mContext.getContentResolver().delete(LocationsEntry.CONTENT_URI,where,selectionArgs);
+    }
+
+    public void changeDisplay(int id,boolean display){
+        int intDisplay = display ? 1 : 0;
+
+        ContentValues values = new ContentValues();
+        values.put(LocationsEntry.COLUMN_DISPLAY_ON_MAP,intDisplay);
+        String[] selectionArgs = {String.valueOf(id)};
+        String where = LocationsEntry._ID + "=?";
+
+        mContext.getContentResolver().update(LocationsEntry.CONTENT_URI,values,where,selectionArgs);
     }
 
 

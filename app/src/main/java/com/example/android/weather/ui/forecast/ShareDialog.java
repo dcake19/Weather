@@ -1,4 +1,4 @@
-package com.example.android.weather;
+package com.example.android.weather.ui.forecast;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+
+import com.example.android.weather.R;
 
 @SuppressLint("ValidFragment")
 public class ShareDialog extends DialogFragment implements View.OnClickListener{

@@ -1,24 +1,23 @@
-package com.example.android.weather;
+package com.example.android.weather.ui.forecast;
 
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
+import com.example.android.weather.R;
 import com.example.android.weather.db.WeatherRepository;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class WeatherActivity extends AppCompatActivity implements WeatherContract.View{
+public class WeatherActivity extends AppCompatActivity implements WeatherContract.View {
 
     WeatherContract.Presenter mPresenter;
     WeatherDisplayAdapter mDailyAdapter;

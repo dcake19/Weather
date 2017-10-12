@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import com.example.android.weather.db.WeatherDbContract.*;
+import com.example.android.weather.ui.mylocations.MyLocationsActivity;
 
 public class WeatherProvider extends ContentProvider {
 
@@ -75,12 +76,33 @@ public class WeatherProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
-        return 0;
+    public int delete(Uri uri, String where, String[] selectionArgs) {
+        SQLiteDatabase database = mDbHelper.getWritableDatabase();
+        int rowsDeleted = 0;
+
+        final int match = sUriMatcher.match(uri);
+
+        switch(match){
+            case MY_LOCATIONS:
+                database.delete(LocationsEntry.TABLE_NAME,where,selectionArgs);
+                break;
+            default:
+                throw new IllegalArgumentException("Deletion is not supported for " + uri);
+        }
+
+        if(rowsDeleted!=0)
+            getContext().getContentResolver().notifyChange(uri, null);
+
+        return rowsDeleted;
     }
 
     @Override
-    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+    public int update(Uri uri, ContentValues values, String where, String[] selectionArgs) {
+        final int match = sUriMatcher.match(uri);
+        if(match== MY_LOCATIONS){
+            SQLiteDatabase database = mDbHelper.getWritableDatabase();
+            database.update(LocationsEntry.TABLE_NAME,values,where,selectionArgs);
+        }
         return 0;
     }
 }

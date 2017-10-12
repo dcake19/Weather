@@ -21,4 +21,8 @@
     <string name="save">Save</string>
 
     <string name="email">Email</string>
+
+    <string name="display">Display on map</string>
+
+    <string name="are_you_sure">Are you sure you want to delete this location?</string>
 </resources>
