@@ -14,7 +14,7 @@ public interface ApiService {
     @GET("/forecast/53755ef8d246f8c0be06fe90f87ec742/52.2053,0.1218/")
     Observable<WeatherForecast> getForecast();
 
-    @GET("/forecast/53755ef8d246f8c0be06fe90f87ec742/{latlong}")
+    @GET("/forecast/53755ef8d246f8c0be06fe90f87ec742/{latlong}?units=si")
     Observable<WeatherForecast> getForecast(
             @Path("latlong") String latlong);
 

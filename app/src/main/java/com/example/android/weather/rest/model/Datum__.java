@@ -95,7 +95,7 @@ public class Datum__ {
     private Integer uvIndexTime;
     @SerializedName("visibility")
     @Expose
-    private Integer visibility;
+    private Double visibility;
     @SerializedName("ozone")
     @Expose
     private Double ozone;
@@ -356,11 +356,11 @@ public class Datum__ {
         this.uvIndexTime = uvIndexTime;
     }
 
-    public Integer getVisibility() {
+    public Double getVisibility() {
         return visibility;
     }
 
-    public void setVisibility(Integer visibility) {
+    public void setVisibility(Double visibility) {
         this.visibility = visibility;
     }
 

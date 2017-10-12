@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Weather</string>
+
+    <string name="high">High:</string>
+    <string name="low">Low:</string>
+    <string name="wind_speed">Wind Speed:</string>
+    <string name="wind_speed_units">m/s</string>
+    <string name="humidity">Humidity:</string>
+    <string name="chance">chance of</string>
 </resources>
