@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.android.weather.R;
@@ -57,6 +58,7 @@ public class MyLocationsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     class ViewHolderLocations extends RecyclerView.ViewHolder implements View.OnClickListener{
 
+        @BindView(R.id.layout_location) LinearLayout layout;
         @BindView(R.id.location_name) TextView locationName;
         @BindView(R.id.location_coords) TextView locationCoords;
         @BindView(R.id.checkbox_displayed) CheckBox displayed;
@@ -65,6 +67,7 @@ public class MyLocationsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         public ViewHolderLocations(View itemView) {
             super(itemView);
             ButterKnife.bind(this,itemView);
+            layout.setOnClickListener(this);
             delete.setOnClickListener(this);
             displayed.setOnClickListener(this);
         }
@@ -91,6 +94,8 @@ public class MyLocationsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                         .show();
             }else if(view.getId() == displayed.getId()){
                 mPresenter.changedDisplayed(getAdapterPosition(),displayed.isChecked());
+            }else{
+                mContext.startActivity(mPresenter.getIntentForWeatherActivity(mContext,getAdapterPosition()));
             }
 
         }

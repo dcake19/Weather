@@ -1,10 +1,14 @@
 package com.example.android.weather.ui.mylocations;
 
 
+import android.content.Context;
+import android.content.Intent;
+
 import com.example.android.weather.db.Location;
 import com.example.android.weather.db.WeatherRepository;
 import com.example.android.weather.rest.ApiService;
 import com.example.android.weather.rest.ApiUtils;
+import com.example.android.weather.ui.forecast.WeatherActivity;
 
 import java.util.ArrayList;
 
@@ -82,5 +86,13 @@ public class MyLocationsPresenter implements MyLocationsContract.Presenter{
     @Override
     public void changedDisplayed(int position,boolean display) {
         mRepository.changeDisplay(mLocations.get(position).id,display);
+    }
+
+    @Override
+    public Intent getIntentForWeatherActivity(Context context, int position) {
+        return WeatherActivity.getIntent(context,
+                mLocations.get(position).name,
+                mLocations.get(position).latitude,
+                mLocations.get(position).longitude);
     }
 }

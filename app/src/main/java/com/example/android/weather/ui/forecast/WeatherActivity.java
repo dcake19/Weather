@@ -1,5 +1,7 @@
 package com.example.android.weather.ui.forecast;
 
+import android.content.Context;
+import android.content.Intent;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,6 +11,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.example.android.weather.R;
 import com.example.android.weather.db.WeatherRepository;
@@ -19,10 +22,16 @@ import butterknife.OnClick;
 
 public class WeatherActivity extends AppCompatActivity implements WeatherContract.View {
 
+    public static final String NAME = "name";
+    public static final String LATITUDE = "latitude";
+    public static final String LONGITUDE = "longitude";
+    public static final String DISPLAY_LAT_LNG = "display_lat_lng";
+
     WeatherContract.Presenter mPresenter;
     WeatherDisplayAdapter mDailyAdapter;
 
     @BindView(R.id.recyclerview_weather) RecyclerView mRecyclerView;
+    @BindView(R.id.location_name) TextView mLocationName;
     @BindView(R.id.spinner_number_days) Spinner mSpinnerDays;
 
     private boolean mInitialized = false;
@@ -36,11 +45,28 @@ public class WeatherActivity extends AppCompatActivity implements WeatherContrac
         ButterKnife.bind(this);
 
         mPresenter = new WeatherPresenter(this,new WeatherRepository(getBaseContext()));
-        mPresenter.downloadForecast();
 
-        //setupToolbar();
         setupSpinner();
-       setRecyclerView();
+        setRecyclerView();
+
+        Intent intent = getIntent();
+
+        String name = intent.getStringExtra(NAME);
+        double lat = intent.getDoubleExtra(LATITUDE,200);
+        double lng = intent.getDoubleExtra(LONGITUDE,200);
+
+
+
+        if(lat==200 || lng==200){
+            mPresenter.downloadForecast(DISPLAY_LAT_LNG,51.5074,0.1278);
+        }
+        else {
+            mPresenter.downloadForecast(name,lat,lng);
+        }
+
+
+
+
 
     }
 
@@ -84,14 +110,16 @@ public class WeatherActivity extends AppCompatActivity implements WeatherContrac
 
     @Override
     public void displayDaily(int day) {
-
-      mDailyAdapter.setSize(7);
+        mDailyAdapter.setSize(7);
+        mLocationName.setText(mPresenter.getName());
     }
 
     @Override
     public void displayHourly(int hours) {
 
     }
+
+
 
 
     @OnClick(R.id.btn_save_location)
@@ -113,6 +141,15 @@ public class WeatherActivity extends AppCompatActivity implements WeatherContrac
 
     public void saveLocation(String locationName){
         mPresenter.saveLocation(locationName);
+    }
+
+
+    public static Intent getIntent(Context context,String name, double latitude, double longitude){
+        Intent intent = new Intent(context, WeatherActivity.class);
+        intent.putExtra(NAME,name);
+        intent.putExtra(LATITUDE,latitude);
+        intent.putExtra(LONGITUDE,longitude);
+        return intent;
     }
 
 }

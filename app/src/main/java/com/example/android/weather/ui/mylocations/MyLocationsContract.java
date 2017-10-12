@@ -1,6 +1,8 @@
 package com.example.android.weather.ui.mylocations;
 
 
+import android.content.Context;
+import android.content.Intent;
 
 public class MyLocationsContract {
 
@@ -15,5 +17,6 @@ public class MyLocationsContract {
         boolean getDisplayed(int position);
         void removeLocation(int position);
         void changedDisplayed(int position,boolean display);
+        Intent getIntentForWeatherActivity(Context context,int position);
     }
 }

@@ -11,7 +11,8 @@ public class WeatherContract {
     }
 
     interface Presenter{
-        void downloadForecast();
+        void downloadForecast(String name,double latitude,double longitude);
+        String getName();
         String getDate(int position);
         String getSummaryDaily(int position);
         String getHighTemp(Context context,int position);

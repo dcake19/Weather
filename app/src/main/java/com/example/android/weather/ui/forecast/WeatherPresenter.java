@@ -34,35 +34,24 @@ public class WeatherPresenter implements WeatherContract.Presenter {
     private String mStringLongitude;
     private Double mLatitude;
     private Double mLongitude;
+    private String mName;
 
     public WeatherPresenter(WeatherContract.View view,WeatherRepository repository) {
         mView = view;
         mRepository = repository;
         mApiService = ApiUtils.getApiService();
-        mLatitude = 51.5074;
-        mLongitude = 0.1278;
-        mStringLatitude = "52.2053";
-        mStringLongitude = "0.1218";
     }
 
-
     @Override
-    public void downloadForecast() {
-//        mApiService.getForecast().enqueue(new Callback<WeatherForecast>() {
-//            @Override
-//            public void onResponse(Call<WeatherForecast> call, Response<WeatherForecast> response) {
-//                WeatherForecast wf = response.body();
-//
-//                Log.d("AnswersPresenter", "posts loaded from API");
-//            }
-//
-//            @Override
-//            public void onFailure(Call<WeatherForecast> call, Throwable t) {
-//                Log.d("AnswersPresenter", "posts loaded from API");
-//            }
-//        });
+    public void downloadForecast(String name,double latitude,double longitude) {
 
+        mLatitude = latitude;
+        mLongitude = longitude;
 
+        mStringLatitude = String.valueOf(latitude);
+        mStringLongitude = String.valueOf(longitude);
+
+        mName = name.equals(WeatherActivity.DISPLAY_LAT_LNG) ? getLatLong() : name;
 
         mApiService.getForecast(getLatLong()).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<WeatherForecast>() {
@@ -86,7 +75,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.v("","");
+
                     }
 
                     @Override
@@ -94,6 +83,11 @@ public class WeatherPresenter implements WeatherContract.Presenter {
 
                     }
                 });
+    }
+
+    @Override
+    public String getName() {
+        return mName;
     }
 
     @Override
@@ -164,7 +158,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
 
     @Override
     public String getLatLong() {
-        return mStringLatitude + "," + mStringLongitude;
+        return mStringLatitude + ", " + mStringLongitude;
     }
 
     @Override
