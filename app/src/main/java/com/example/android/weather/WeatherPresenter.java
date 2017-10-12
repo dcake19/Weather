@@ -4,6 +4,7 @@ package com.example.android.weather;
 import android.content.Context;
 import android.util.Log;
 
+import com.example.android.weather.db.WeatherRepository;
 import com.example.android.weather.rest.ApiService;
 import com.example.android.weather.rest.ApiUtils;
 import com.example.android.weather.rest.model.Daily;
@@ -18,28 +19,31 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+
 
 public class WeatherPresenter implements WeatherContract.Presenter {
 
     private WeatherContract.View mView;
     private ApiService mApiService;
+    private WeatherRepository mRepository;
     private Daily mDaily;
     private Hourly mHourly;
     private boolean mShowDaily = true;
     private String mStringLatitude;
     private String mStringLongitude;
+    private Double mLatitude;
+    private Double mLongitude;
 
-    public WeatherPresenter( WeatherContract.View view) {
-
+    public WeatherPresenter(WeatherContract.View view,WeatherRepository repository) {
         mView = view;
+        mRepository = repository;
         mApiService = ApiUtils.getApiService();
+        mLatitude = 51.5074;
+        mLongitude = 0.1278;
         mStringLatitude = "52.2053";
         mStringLongitude = "0.1218";
+        mRepository.getLoactions();
     }
-
 
 
     @Override
@@ -175,7 +179,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
 
     @Override
     public void saveLocation(String locationName) {
-
+        mRepository.insert(locationName,mLatitude,mLongitude);
     }
 
     @Override

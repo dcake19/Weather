@@ -12,6 +12,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
+import com.example.android.weather.db.WeatherRepository;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -34,7 +36,7 @@ public class WeatherActivity extends AppCompatActivity implements WeatherContrac
 
         ButterKnife.bind(this);
 
-        mPresenter = new WeatherPresenter(this);
+        mPresenter = new WeatherPresenter(this,new WeatherRepository(getBaseContext()));
         mPresenter.downloadForecast();
 
         //setupToolbar();
@@ -111,7 +113,7 @@ public class WeatherActivity extends AppCompatActivity implements WeatherContrac
     }
 
     public void saveLocation(String locationName){
-
+        mPresenter.saveLocation(locationName);
     }
 
 }
