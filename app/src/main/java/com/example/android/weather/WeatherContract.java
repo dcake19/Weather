@@ -20,5 +20,9 @@ public class WeatherContract {
         String getHumidityDaily(Context context,int position);
         String getPrecipDaily(Context context,int position);
         int getIconDaily(Context context,int position);
+        String getLatLong();
+        String getLatitude();
+        String getLongitude();
+        void saveLocation(String locationName);
     }
 }

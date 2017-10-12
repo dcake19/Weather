@@ -29,28 +29,17 @@ public class WeatherPresenter implements WeatherContract.Presenter {
     private Daily mDaily;
     private Hourly mHourly;
     private boolean mShowDaily = true;
-    private ArrayList<String> mDateStrings = new ArrayList<>(7);
+    private String mStringLatitude;
+    private String mStringLongitude;
 
     public WeatherPresenter( WeatherContract.View view) {
 
         mView = view;
         mApiService = ApiUtils.getApiService();
-        setDateStrings();
+        mStringLatitude = "52.2053";
+        mStringLongitude = "0.1218";
     }
 
-    private void setDateStrings(){
-        Date date = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("EEE dd MMM");
-        long time = date.getTime();
-
-        mDateStrings.add(sdf.format(date));
-        mDateStrings.add(sdf.format(date));
-        mDateStrings.add(sdf.format(date));
-        mDateStrings.add(sdf.format(date));
-        mDateStrings.add(sdf.format(date));
-        mDateStrings.add(sdf.format(date));
-        mDateStrings.add(sdf.format(date));
-    }
 
 
     @Override
@@ -71,7 +60,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
 
 
 
-        mApiService.getForecast("52.2053,0.1218").subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+        mApiService.getForecast(getLatLong()).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<WeatherForecast>() {
                     @Override
                     public void onSubscribe(Disposable d) {
@@ -105,55 +94,74 @@ public class WeatherPresenter implements WeatherContract.Presenter {
 
     @Override
     public String getDate(int position) {
-        int time = mDaily.getData().get(position).getTime();
+        int time = mDaily.getData().get(position+1).getTime();
         long javaTime = time;
         javaTime *= 1000;
         Date date = new Date(javaTime);
         SimpleDateFormat sdf = new SimpleDateFormat("EEE dd MMM");
         return sdf.format(date);
-       // return mDateStrings.get(position);
     }
 
     @Override
     public String getSummaryDaily(int position) {
-        return mDaily.getData().get(position).getSummary();
+        return mDaily.getData().get(position+1).getSummary();
     }
 
     @Override
     public String getHighTemp(Context context, int position) {
-        return context.getString(R.string.high) + " " + mDaily.getData().get(position).getTemperatureHigh();
+        return context.getString(R.string.high) + " " + mDaily.getData().get(position+1).getTemperatureHigh();
     }
 
     @Override
     public String getLowTemp(Context context,int position) {
-        return context.getString(R.string.low) + " " + mDaily.getData().get(position).getTemperatureLow();
+        return context.getString(R.string.low) + " " + mDaily.getData().get(position+1).getTemperatureLow();
     }
 
     @Override
     public String getWindSpeedDaily(Context context,int position) {
         return context.getString(R.string.wind_speed)
-                + " " + mDaily.getData().get(position).getWindSpeed()
+                + " " + mDaily.getData().get(position+1).getWindSpeed()
                 + " " + context.getString(R.string.wind_speed_units) ;
     }
 
     @Override
     public String getHumidityDaily(Context context,int position) {
         return context.getString(R.string.humidity)
-                + " " + mDaily.getData().get(position).getHumidity()
+                + " " + mDaily.getData().get(position+1).getHumidity()
                 + "%";
     }
 
     @Override
     public String getPrecipDaily(Context context,int position) {
-        return mDaily.getData().get(position).getPrecipProbability() + "%"
+        return mDaily.getData().get(position+1).getPrecipProbability() + "%"
                 + " " +context.getString(R.string.chance)
-                + " " + mDaily.getData().get(position).getPrecipType();
+                + " " + mDaily.getData().get(position+1).getPrecipType();
     }
 
     @Override
     public int getIconDaily(Context context, int position) {
-        String icon =  mDaily.getData().get(position).getIcon();
+        String icon =  mDaily.getData().get(position+1).getIcon();
         return weatherIcon(icon);
+    }
+
+    @Override
+    public String getLatLong() {
+        return mStringLatitude + "," + mStringLongitude;
+    }
+
+    @Override
+    public String getLatitude() {
+        return mStringLatitude;
+    }
+
+    @Override
+    public String getLongitude() {
+        return mStringLongitude;
+    }
+
+    @Override
+    public void saveLocation(String locationName) {
+
     }
 
     private int weatherIcon(String icon){

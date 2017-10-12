@@ -7,4 +7,17 @@
     <string name="wind_speed_units">m/s</string>
     <string name="humidity">Humidity:</string>
     <string name="chance">chance of</string>
+
+
+    <string name="save_location">Save\nLocation</string>
+    <string name="display_number_days">Days</string>
+
+
+    <string name="enter_location">Enter Location:</string>
+    <string name="latitude">Latitude:</string>
+    <string name="longitude">Longitude:</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="save">Save</string>
+
+    <string name="email">Email</string>
 </resources>
