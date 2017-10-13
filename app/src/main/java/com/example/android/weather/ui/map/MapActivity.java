@@ -1,9 +1,11 @@
 package com.example.android.weather.ui.map;
 
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
+import android.speech.RecognizerIntent;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -27,6 +29,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -80,6 +83,30 @@ public class MapActivity extends AppCompatActivity
     @OnClick(R.id.btn_search)
     public void search(){
         mPresenter.searchForLocation(mSearchTerm.getText().toString());
+    }
+
+    @OnClick(R.id.fab_speak)
+    public void speak(){
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.ENGLISH);
+        try{
+            startActivityForResult(intent,200);
+        }catch (ActivityNotFoundException e){
+
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==200){
+            if(resultCode==RESULT_OK && data != null){
+                ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                mSearchTerm.setText(result.get(0));
+                search();
+            }
+        }
     }
 
 
