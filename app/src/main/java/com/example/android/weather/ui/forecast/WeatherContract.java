@@ -27,5 +27,6 @@ public class WeatherContract {
         void saveLocation(String locationName);
         String getShareSubject(Context context,int days);
         String getShareBodyDaily(Context context,int days);
+        String getWeatherSpeak(int position);
     }
 }

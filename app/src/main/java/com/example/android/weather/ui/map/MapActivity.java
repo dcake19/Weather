@@ -1,0 +1,92 @@
+package com.example.android.weather.ui.map;
+
+
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+
+import com.example.android.weather.R;
+import com.example.android.weather.db.WeatherRepository;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.ArrayList;
+
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
+public class MapActivity extends AppCompatActivity
+        implements OnMapReadyCallback, MapContract.View{
+
+    private MapContract.Presenter mPresenter;
+
+    private GoogleMap mMap;
+    private boolean mReady=false;
+    private ArrayList<MarkerOptions> mMarkers;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.map_activity);
+
+        ButterKnife.bind(this);
+
+        mPresenter = new MapPresenter(this,new WeatherRepository(this));
+        mMarkers = new ArrayList<>();
+
+        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+    }
+
+
+    @OnClick({R.id.btn_map,R.id.btn_terrain,R.id.btn_satellite})
+    public void changeMap(View view){
+        if(view.getId()==R.id.btn_map){
+            if(mReady)
+                mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        }
+        else if(view.getId()==R.id.btn_terrain){
+            if(mReady)
+                mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+        }
+        else if(view.getId()==R.id.btn_satellite){
+            if(mReady)
+                mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+        }
+    }
+
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        mReady = true;
+        mPresenter.getLocations();
+    }
+
+    @Override
+    public void locationsReady(int size) {
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+
+        for(int i=0;i<size;i++){
+            mMarkers.add(new MarkerOptions()
+                    .position(new LatLng(mPresenter.getLatitude(i),mPresenter.getLongitude(i))));
+            mMap.addMarker(mMarkers.get(i));
+            builder.include(mMarkers.get(i).getPosition());
+        }
+
+        int padding = 120; // offset from edges of the map in pixels
+        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(builder.build(), padding);
+        mMap.moveCamera(cu);
+
+        //LatLng center = new LatLng(mPresenter.getCenterLatitude(),mPresenter.getCenterLongitude());
+       // CameraPosition target = CameraPosition.builder().target(center).zoom(mMap.getCameraPosition().zoom).build();
+      //  mMap.moveCamera(CameraUpdateFactory.newCameraPosition(target));
+    }
+}

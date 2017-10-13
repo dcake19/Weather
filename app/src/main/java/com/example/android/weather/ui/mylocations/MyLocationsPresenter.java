@@ -29,14 +29,6 @@ public class MyLocationsPresenter implements MyLocationsContract.Presenter{
     public MyLocationsPresenter(MyLocationsContract.View view, WeatherRepository repository) {
         mView = view;
         mRepository = repository;
-
-//       mRepository.insert("Cambridge",52.2053,0.1218);
-//        mRepository.insert("Leeds",53.8008,1.5491);
-//        mRepository.insert("Birmingham",52.4862, 1.8904);
-//        mRepository.insert("Manchester",53.4808, 2.2426);
-//        mRepository.insert("Glasgow",55.8642, 4.2518);
-//        mRepository.insert("Bristol",51.4545, 2.5879);
-
     }
 
     @Override
@@ -78,14 +70,31 @@ public class MyLocationsPresenter implements MyLocationsContract.Presenter{
 
     @Override
     public void removeLocation(int position) {
-        int id = mLocations.get(position).id;
+        final int id = mLocations.get(position).id;
         mLocations.remove(position);
-        mRepository.delete(id);
+
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+             mRepository.delete(id);
+            }
+        };
+        thread.start();
+
     }
 
     @Override
-    public void changedDisplayed(int position,boolean display) {
-        mRepository.changeDisplay(mLocations.get(position).id,display);
+    public void changedDisplayed(final int position,final boolean display) {
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                mRepository.changeDisplay(mLocations.get(position).id,display);
+            }
+        };
+        thread.start();
+
+
+
     }
 
     @Override

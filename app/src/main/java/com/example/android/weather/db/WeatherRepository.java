@@ -46,6 +46,29 @@ public class WeatherRepository {
         return locations;
     }
 
+    public ArrayList<Location> getLoactionsForMap(){
+
+        String[] selectionArgs = {"1"};
+        String where = LocationsEntry.COLUMN_DISPLAY_ON_MAP + "=?";
+
+        Cursor cursor = mContext.getContentResolver().query(LocationsEntry.CONTENT_URI,null,where,selectionArgs,null);
+
+        ArrayList<Location> locations = new ArrayList<>();
+
+        while (cursor.moveToNext()){
+            locations.add(new Location(
+                    cursor.getInt(cursor.getColumnIndex(LocationsEntry._ID)),
+                    cursor.getString(cursor.getColumnIndex(LocationsEntry.COLUMN_NAME)),
+                    cursor.getDouble(cursor.getColumnIndex(LocationsEntry.COLUMN_LATITUDE)),
+                    cursor.getDouble(cursor.getColumnIndex(LocationsEntry.COLUMN_LONGITUDE)),
+                    cursor.getInt(cursor.getColumnIndex(LocationsEntry.COLUMN_DISPLAY_ON_MAP))));
+        }
+
+        cursor.close();
+
+        return locations;
+    }
+
     public void delete(int id){
         String[] selectionArgs = {String.valueOf(id)};
         String where = LocationsEntry._ID + "=?";

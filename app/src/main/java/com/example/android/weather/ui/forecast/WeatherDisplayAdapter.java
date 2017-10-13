@@ -1,14 +1,18 @@
 package com.example.android.weather.ui.forecast;
 
 import android.content.Context;
+import android.speech.tts.TextToSpeech;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.android.weather.R;
+
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -19,12 +23,14 @@ public class WeatherDisplayAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     private boolean mDaily = true;
     private WeatherContract.Presenter mPresenter;
     private int mSize = 0;
+    private TextToSpeech mTextToSpeech;
 
-    public WeatherDisplayAdapter(Context context, WeatherContract.Presenter presenter, boolean daily,int size) {
+    public WeatherDisplayAdapter(Context context, WeatherContract.Presenter presenter, TextToSpeech textToSpeech,boolean daily,int size) {
         mContext = context;
         mPresenter = presenter;
         mDaily = daily;
         mSize = size;
+        mTextToSpeech = textToSpeech;
     }
 
     public void setSize(int size){
@@ -62,7 +68,7 @@ public class WeatherDisplayAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     }
 
     class ViewHolderWeatherDaily extends RecyclerView.ViewHolder implements View.OnClickListener{
-
+        @BindView(R.id.layout_weather) LinearLayout mLayout;
         @BindView(R.id.weather_icon) ImageView icon;
         @BindView(R.id.date) TextView date;
         @BindView(R.id.summary) TextView summary;
@@ -75,11 +81,12 @@ public class WeatherDisplayAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         public ViewHolderWeatherDaily(View itemView) {
             super(itemView);
             ButterKnife.bind(this,itemView);
+            mLayout.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-
+            mTextToSpeech.speak(mPresenter.getWeatherSpeak(getAdapterPosition()),TextToSpeech.QUEUE_FLUSH,null);
         }
     }
 }

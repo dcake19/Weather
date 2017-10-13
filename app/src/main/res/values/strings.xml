@@ -1,6 +1,11 @@
 <resources>
     <string name="app_name">Weather</string>
 
+    <string name="forecast_here">Forecast for this location</string>
+    <string name="my_locations">My Locations</string>
+    <string name="show_on_map">Show on Map</string>
+
+
     <string name="high">High:</string>
     <string name="low">Low:</string>
     <string name="wind_speed">Wind Speed:</string>
@@ -25,4 +30,9 @@
     <string name="display">Display on map</string>
 
     <string name="are_you_sure">Are you sure you want to delete this location?</string>
+
+    <string name="map">Map</string>
+    <string name="terrain">Terrain</string>
+    <string name="satellite">Satellite</string>
+
 </resources>

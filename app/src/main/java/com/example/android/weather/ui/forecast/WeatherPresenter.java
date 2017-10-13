@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.example.android.weather.R;
 import com.example.android.weather.db.WeatherRepository;
+import com.example.android.weather.rest.model.Datum__;
 import com.example.android.weather.ui.forecast.WeatherContract;
 import com.example.android.weather.rest.ApiService;
 import com.example.android.weather.rest.ApiUtils;
@@ -172,8 +173,16 @@ public class WeatherPresenter implements WeatherContract.Presenter {
     }
 
     @Override
-    public void saveLocation(String locationName) {
-        mRepository.insert(locationName,mLatitude,mLongitude);
+    public void saveLocation(final String locationName) {
+
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                mRepository.insert(locationName,mLatitude,mLongitude);
+            }
+        };
+        thread.start();
+
     }
 
     @Override
@@ -198,6 +207,17 @@ public class WeatherPresenter implements WeatherContract.Presenter {
         }
 
         return shareBody.toString();
+    }
+
+    @Override
+    public String getWeatherSpeak(int position) {
+        Datum__ data = mDaily.getData().get(position+1);
+        Double precipChance = (data.getPrecipProbability()*100);
+
+        return data.getSummary() + "The high temperature for the day is " + data.getTemperatureHigh() + " degrees celcius." +
+                "The low temperature for the day is " + data.getTemperatureLow() + " degrees celcius." +
+                "The wind speed is " + data.getWindSpeed() + " meters per second." +
+                "There is a " + precipChance.intValue() + "percent chance of " + data.getPrecipType();
     }
 
     private int weatherIcon(String icon){
