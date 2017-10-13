@@ -93,8 +93,6 @@ public class MyLocationsPresenter implements MyLocationsContract.Presenter{
         };
         thread.start();
 
-
-
     }
 
     @Override

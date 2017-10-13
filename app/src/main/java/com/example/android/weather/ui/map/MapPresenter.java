@@ -1,8 +1,12 @@
 package com.example.android.weather.ui.map;
 
 
+import android.content.Context;
+import android.content.Intent;
+
 import com.example.android.weather.db.Location;
 import com.example.android.weather.db.WeatherRepository;
+import com.example.android.weather.ui.forecast.WeatherActivity;
 
 import java.util.ArrayList;
 
@@ -57,24 +61,10 @@ public class MapPresenter implements MapContract.Presenter{
     }
 
     @Override
-    public double getCenterLongitude() {
-        double largest = mLocations.get(0).longitude;
-        double smallest = mLocations.get(0).longitude;
-        for(int i=1;i<mLocations.size();i++){
-            if (mLocations.get(i).longitude>largest) largest = mLocations.get(i).longitude;
-            if (mLocations.get(i).longitude<smallest) smallest = mLocations.get(i).longitude;
-        }
-        return (largest+smallest)/2;
-    }
-
-    @Override
-    public double getCenterLatitude() {
-        double largest = mLocations.get(0).latitude;
-        double smallest = mLocations.get(0).latitude;
-        for(int i=1;i<mLocations.size();i++){
-            if (mLocations.get(i).latitude>largest) largest = mLocations.get(i).latitude;
-            if (mLocations.get(i).latitude<smallest) smallest = mLocations.get(i).latitude;
-        }
-        return (largest+smallest)/2;
+    public Intent getIntentForWeatherActivity(Context context, int position) {
+        return WeatherActivity.getIntent(context,
+                mLocations.get(position).name,
+                mLocations.get(position).latitude,
+                mLocations.get(position).longitude);
     }
 }

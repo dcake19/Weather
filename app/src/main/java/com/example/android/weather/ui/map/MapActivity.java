@@ -1,6 +1,7 @@
 package com.example.android.weather.ui.map;
 
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -15,6 +16,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
@@ -23,7 +25,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class MapActivity extends AppCompatActivity
-        implements OnMapReadyCallback, MapContract.View{
+        implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
+        MapContract.View{
 
     private MapContract.Presenter mPresenter;
 
@@ -77,16 +80,26 @@ public class MapActivity extends AppCompatActivity
         for(int i=0;i<size;i++){
             mMarkers.add(new MarkerOptions()
                     .position(new LatLng(mPresenter.getLatitude(i),mPresenter.getLongitude(i))));
+            mMarkers.get(i).title(Integer.toString(i));
             mMap.addMarker(mMarkers.get(i));
             builder.include(mMarkers.get(i).getPosition());
         }
 
+        mMap.setOnMarkerClickListener(this);
         int padding = 120; // offset from edges of the map in pixels
         CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(builder.build(), padding);
         mMap.moveCamera(cu);
 
-        //LatLng center = new LatLng(mPresenter.getCenterLatitude(),mPresenter.getCenterLongitude());
-       // CameraPosition target = CameraPosition.builder().target(center).zoom(mMap.getCameraPosition().zoom).build();
-      //  mMap.moveCamera(CameraUpdateFactory.newCameraPosition(target));
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+
+        int position = Integer.valueOf(marker.getTitle());
+        Intent intent = mPresenter.getIntentForWeatherActivity(getBaseContext(),position);
+        startActivity(intent);
+
+
+        return true;
     }
 }

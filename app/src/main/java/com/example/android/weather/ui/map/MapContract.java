@@ -1,6 +1,8 @@
 package com.example.android.weather.ui.map;
 
 
+import android.content.Context;
+import android.content.Intent;
 
 public class MapContract {
 
@@ -12,7 +14,6 @@ public class MapContract {
         void getLocations();
         double getLatitude(int position);
         double getLongitude(int position);
-        double getCenterLatitude();
-        double getCenterLongitude();
+        Intent getIntentForWeatherActivity(Context context,int position);
     }
 }
