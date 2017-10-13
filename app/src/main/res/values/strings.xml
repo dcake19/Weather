@@ -35,4 +35,6 @@
     <string name="terrain">Terrain</string>
     <string name="satellite">Satellite</string>
 
+    <string name="search">Search:</string>
+
 </resources>

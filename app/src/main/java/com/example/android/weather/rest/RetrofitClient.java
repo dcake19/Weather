@@ -8,7 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RetrofitClient {
 
     private static Retrofit retrofit = null;
-
+    private static Retrofit retrofitLocation = null;
 //    public static Retrofit getClient() {
 //        if (retrofit == null) {
 //            retrofit = new Retrofit.Builder()
@@ -22,7 +22,18 @@ public class RetrofitClient {
     public static Retrofit getClient(){
         if (retrofit == null) {
             retrofit = new Retrofit.Builder()
-                    .baseUrl("https://api.darksky.net/forecast/53755ef8d246f8c0be06fe90f87ec742/")
+                    .baseUrl("https://api.darksky.net/")
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+        }
+        return retrofit;
+    }
+
+    public static Retrofit getClientLocation(){
+        if (retrofit == null) {
+            retrofit = new Retrofit.Builder()
+                    .baseUrl("https://maps.googleapis.com/")
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();

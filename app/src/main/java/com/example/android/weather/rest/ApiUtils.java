@@ -11,4 +11,10 @@ public class ApiUtils {
         return RetrofitClient.getClient().create(ApiService.class);
     }
 
+    public static ApiServiceLocation getApiServiceLocation() {
+
+        return RetrofitClient.getClientLocation().create(ApiServiceLocation.class);
+    }
+
+
 }

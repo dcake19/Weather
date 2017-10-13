@@ -2,9 +2,12 @@ package com.example.android.weather.ui.map;
 
 
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
 
 import com.example.android.weather.R;
 import com.example.android.weather.db.WeatherRepository;
@@ -19,10 +22,14 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
 
 public class MapActivity extends AppCompatActivity
         implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
@@ -33,6 +40,8 @@ public class MapActivity extends AppCompatActivity
     private GoogleMap mMap;
     private boolean mReady=false;
     private ArrayList<MarkerOptions> mMarkers;
+
+    @BindView(R.id.txt_search) EditText mSearchTerm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,12 +74,18 @@ public class MapActivity extends AppCompatActivity
         }
     }
 
+    @OnClick(R.id.btn_search)
+    public void search(){
+        mPresenter.searchForLocation(mSearchTerm.getText().toString());
+    }
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mReady = true;
         mPresenter.getLocations();
+
     }
 
     @Override
@@ -93,13 +108,20 @@ public class MapActivity extends AppCompatActivity
     }
 
     @Override
+    public void searchComplete(double lat, double lng) {
+        CameraPosition target = CameraPosition.builder().target(new LatLng(lat,lng)).zoom(10).build();
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(target));
+    }
+
+    @Override
     public boolean onMarkerClick(Marker marker) {
 
         int position = Integer.valueOf(marker.getTitle());
         Intent intent = mPresenter.getIntentForWeatherActivity(getBaseContext(),position);
         startActivity(intent);
 
-
         return true;
     }
+
+
 }
