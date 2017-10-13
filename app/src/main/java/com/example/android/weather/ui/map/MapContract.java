@@ -8,7 +8,7 @@ public class MapContract {
 
     interface View{
         void locationsReady(int size);
-        void searchComplete(double lat,double lng);
+        void searchComplete(String name,double lat,double lng);
     }
 
     interface Presenter{
@@ -17,6 +17,6 @@ public class MapContract {
         double getLongitude(int position);
         Intent getIntentForWeatherActivity(Context context,int position);
         void searchForLocation(String location);
-
+        void saveSearchedTerm(String name,double lat,double lng);
     }
 }

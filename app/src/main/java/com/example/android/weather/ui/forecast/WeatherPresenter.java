@@ -159,7 +159,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
 
     @Override
     public String getLatLong() {
-        return mStringLatitude + ", " + mStringLongitude;
+        return mStringLatitude + "," + mStringLongitude;
     }
 
     @Override

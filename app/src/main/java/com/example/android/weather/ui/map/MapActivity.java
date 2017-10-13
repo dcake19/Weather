@@ -4,10 +4,12 @@ package com.example.android.weather.ui.map;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 
 import com.example.android.weather.R;
 import com.example.android.weather.db.WeatherRepository;
@@ -41,6 +43,7 @@ public class MapActivity extends AppCompatActivity
     private boolean mReady=false;
     private ArrayList<MarkerOptions> mMarkers;
 
+    @BindView(R.id.layout_map) LinearLayout mLayout;
     @BindView(R.id.txt_search) EditText mSearchTerm;
 
     @Override
@@ -108,9 +111,24 @@ public class MapActivity extends AppCompatActivity
     }
 
     @Override
-    public void searchComplete(double lat, double lng) {
+    public void searchComplete(final String name, final double lat, final double lng) {
         CameraPosition target = CameraPosition.builder().target(new LatLng(lat,lng)).zoom(10).build();
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(target));
+
+        Snackbar.make(mLayout, getResources().getString(R.string.add_to_my_locations), Snackbar.LENGTH_INDEFINITE)
+                .setAction(getResources().getString(android.R.string.yes),
+                        new View.OnClickListener(){
+                            @Override
+                            public void onClick(View v) {
+                                mPresenter.saveSearchedTerm(name,lat,lng);
+                                mMarkers.add(new MarkerOptions().position(new LatLng(lat,lng)));
+                                int last = mMarkers.size()-1;
+                                mMarkers.get(last).title(Integer.toString(last));
+                                mMap.addMarker(mMarkers.get(last));
+                            }
+                        }
+                )
+                .show();
     }
 
     @Override

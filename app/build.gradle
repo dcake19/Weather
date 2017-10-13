@@ -21,6 +21,7 @@ android {
     buildTypes.each {
         //Enter tmdb api key here
         it.buildConfigField 'String', 'DARKSKY_API_KEY', "\"53755ef8d246f8c0be06fe90f87ec742\""
+        it.buildConfigField 'String', 'GEOCODING_API_KEY', "\"AIzaSyDWAeoc_1ZqPvlzNCbMkw5TiEB-uLc-YVY\""
     }
 }
 

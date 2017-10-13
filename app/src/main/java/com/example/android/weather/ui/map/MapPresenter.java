@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.example.android.weather.BuildConfig;
 import com.example.android.weather.db.Location;
 import com.example.android.weather.db.WeatherRepository;
 import com.example.android.weather.rest.ApiServiceLocation;
@@ -85,7 +86,7 @@ public class MapPresenter implements MapContract.Presenter{
     @Override
     public void searchForLocation(String location) {
 
-        mApiServiceLocation.getLocation(location,"AIzaSyDWAeoc_1ZqPvlzNCbMkw5TiEB-uLc-YVY").subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+        mApiServiceLocation.getLocation(location, BuildConfig.GEOCODING_API_KEY).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<CitySearchResults>(){
                     @Override
                     public void onSubscribe(Disposable d) {
@@ -114,7 +115,7 @@ public class MapPresenter implements MapContract.Presenter{
                         }
                         mLastSearchedLat = citySearchResults.getResults().get(0).getGeometry().getLocation().getLat();
                         mLastSearchedLng = citySearchResults.getResults().get(0).getGeometry().getLocation().getLng();
-                        mView.searchComplete(mLastSearchedLat,mLastSearchedLng);
+                        mView.searchComplete(mLastSearchedName,mLastSearchedLat,mLastSearchedLng);
                     }
 
                     @Override
@@ -128,6 +129,19 @@ public class MapPresenter implements MapContract.Presenter{
                     }
     });
 
+    }
+
+    @Override
+    public void saveSearchedTerm(final String name,final double lat,final double lng) {
+        mLocations.add(new Location(0,name,lat,lng,1));
+
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                mRepository.insert(name,lat,lng);
+            }
+        };
+        thread.start();
     }
 
 

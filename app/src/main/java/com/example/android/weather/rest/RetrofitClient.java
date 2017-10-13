@@ -31,13 +31,13 @@ public class RetrofitClient {
     }
 
     public static Retrofit getClientLocation(){
-        if (retrofit == null) {
-            retrofit = new Retrofit.Builder()
+        if (retrofitLocation == null) {
+            retrofitLocation = new Retrofit.Builder()
                     .baseUrl("https://maps.googleapis.com/")
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
         }
-        return retrofit;
+        return retrofitLocation;
     }
 }

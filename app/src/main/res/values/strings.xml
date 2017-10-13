@@ -34,7 +34,7 @@
     <string name="map">Map</string>
     <string name="terrain">Terrain</string>
     <string name="satellite">Satellite</string>
-
+    <string name="add_to_my_locations">Add to my locations</string>
     <string name="search">Search:</string>
 
 </resources>
