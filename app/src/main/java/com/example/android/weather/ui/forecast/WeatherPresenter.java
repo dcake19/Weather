@@ -10,6 +10,7 @@ import com.example.android.weather.db.WeatherRepository;
 import com.example.android.weather.rest.ApiServiceLocation;
 import com.example.android.weather.rest.citysearch.AddressComponent;
 import com.example.android.weather.rest.citysearch.CitySearchResults;
+import com.example.android.weather.rest.model.Datum_;
 import com.example.android.weather.rest.model.Datum__;
 import com.example.android.weather.ui.forecast.WeatherContract;
 import com.example.android.weather.rest.ApiService;
@@ -36,7 +37,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
     private WeatherRepository mRepository;
     private Daily mDaily;
     private Hourly mHourly;
-    private boolean mShowDaily = true;
+   // private boolean mShowDaily = true;
     private String mStringLatitude;
     private String mStringLongitude;
     private Double mLatitude;
@@ -50,13 +51,19 @@ public class WeatherPresenter implements WeatherContract.Presenter {
         mApiServiceLocation = ApiUtils.getApiServiceLocation();
     }
 
-    @Override
-    public void downloadForecast() {
-        downloadForecast(mName,mLatitude,mLongitude);
+    public void setViewAndRepository(WeatherContract.View view,WeatherRepository repository)
+    {
+        mView = view;
+        mRepository = repository;
     }
 
     @Override
-    public void downloadForecast(String name,double latitude,double longitude) {
+    public void downloadForecast(boolean daily) {
+        downloadForecast(mName,mLatitude,mLongitude,daily);
+    }
+
+    @Override
+    public void downloadForecast(String name,double latitude,double longitude,final boolean daily) {
 
         mLatitude = latitude;
         mLongitude = longitude;
@@ -64,7 +71,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
         mStringLatitude = String.valueOf(latitude);
         mStringLongitude = String.valueOf(longitude);
 
-        if(name==null) name = WeatherActivity.DISPLAY_LAT_LNG;
+        if(name==null || name.equals("")) name = WeatherActivity.DISPLAY_LAT_LNG;
         if(name.equals(WeatherActivity.DISPLAY_LAT_LNG)){
             mName = WeatherActivity.DISPLAY_LAT_LNG;
             mApiServiceLocation.getLocation(getLatLong(), BuildConfig.GEOCODING_API_KEY).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
@@ -120,19 +127,16 @@ public class WeatherPresenter implements WeatherContract.Presenter {
                 .subscribe(new Observer<WeatherForecast>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-
                     }
 
                     @Override
                     public void onNext(WeatherForecast weatherForecast) {
-
                         mDaily = weatherForecast.getDaily();
-                       // mHourly = weatherForecast.getHourly();
-
-                        if(mShowDaily)
+                        mHourly = weatherForecast.getHourly();
+                        if(daily)
                             mView.displayDaily(mDaily.getData().size());
-//                        else
-//                            mView.displayHourly(mHourly.getData().size());
+                        else
+                           mView.displayHourly(mHourly.getData().size());
 
                     }
 
@@ -281,7 +285,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
     }
 
     @Override
-    public String getWeatherSpeak(int position) {
+    public String getWeatherSpeakDaily(int position) {
         Datum__ data = mDaily.getData().get(position+1);
         Double precipChance = (data.getPrecipProbability()*100);
         String precipType = data.getPrecipType();
@@ -291,6 +295,105 @@ public class WeatherPresenter implements WeatherContract.Presenter {
                 "The low temperature for the day is " + data.getTemperatureLow().intValue() + " degrees celcius." +
                 "The wind speed is " + formatDoubleAsString(1, data.getWindSpeed()) + " meters per second." +
                 "There is a " + precipChance.intValue() + "percent chance of " + precipType;
+    }
+
+
+
+
+    @Override
+    public String getTime(int position) {
+        int time = mHourly.getData().get(position).getTime();
+        long javaTime = time;
+        javaTime *= 1000;
+        Date date = new Date(javaTime);
+        SimpleDateFormat sdf = new SimpleDateFormat("HH");
+        String hour = sdf.format(date);
+        int h = Integer.valueOf(hour);
+        String display;
+        if(h==12)
+            display = "12 pm";
+        else if(h==0)
+            display = "12 am";
+        else if(h<12)
+            display = h + " am";
+        else
+            display = (h-12) + " pm";
+        return display;
+    }
+
+    @Override
+    public String getTempHourly(int position) {
+        return formatDoubleAsString(0,mHourly.getData().get(position).getTemperature()) +  "\u2103";
+    }
+
+    @Override
+    public String getWindSpeedHourly(Context context, int position) {
+        String windSpeed = formatDoubleAsString(1, mHourly.getData().get(position).getWindSpeed());
+        return  windSpeed + " " + context.getString(R.string.wind_speed_units) ;
+    }
+
+    @Override
+    public String getPrecipHourly(Context context, int position) {
+        String chance = formatDoubleAsString(0,mHourly.getData().get(position).getPrecipProbability()*100);
+
+        String precipType = mHourly.getData().get(position).getPrecipType();
+        if(precipType == null) precipType = "rain";
+        return chance + "\u0025"
+                + " " +context.getString(R.string.chance)
+                + " " + precipType;
+    }
+
+    @Override
+    public int getIconHourly(Context context, int position) {
+        String icon =  mHourly.getData().get(position).getIcon();
+        return weatherIcon(icon);
+    }
+
+    @Override
+    public String getWeatherSpeakHourly(int position) {
+        Datum_ data = mHourly.getData().get(position);
+        Double precipChance = (data.getPrecipProbability()*100);
+        String precipType = data.getPrecipType();
+        if(precipType==null) precipType = "rain";
+
+        return data.getSummary() + ". The temperature will be " + data.getTemperature().intValue() + " degrees celcius." +
+                "The wind speed will be " + formatDoubleAsString(1, data.getWindSpeed()) + " meters per second." +
+                "There is a " + precipChance.intValue() + "percent chance of " + precipType;
+    }
+
+    @Override
+    public String getShareSubjectHourly(Context context) {
+        return context.getString(R.string.weather_for_next) + " 24 hours.";
+    }
+
+    @Override
+    public String getShareBodyHourly(Context context) {
+        StringBuilder shareBody = new StringBuilder();
+
+        for(int i=0;i<24;i++) {
+            shareBody.append(getTime(i)+"\n");
+            shareBody.append(getSummaryHourly(i)+"\n");
+            shareBody.append("Temperature: " + getTempHourly(i)+"\n");
+            shareBody.append("Wind Speed: " + getWindSpeedHourly(context,i)+"\n");
+            shareBody.append(getPrecipHourlyEmail(context,i)+"\n");
+            shareBody.append("\n");
+        }
+
+        return shareBody.toString();
+    }
+
+    private String getSummaryHourly(int position){
+        return mHourly.getData().get(position).getSummary();
+    }
+
+    private String getPrecipHourlyEmail(Context context,int position) {
+        String chance = formatDoubleAsString(0,mHourly.getData().get(position).getPrecipProbability()*100);
+        String precipType = mHourly.getData().get(position).getPrecipType();
+        if(precipType == null) precipType = "rain";
+
+        return chance + " pct."
+                + " " + context.getString(R.string.chance)
+                + " " + precipType;
     }
 
     private int weatherIcon(String icon){

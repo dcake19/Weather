@@ -22,6 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:textColor="@color/colorTextLight"
+        android:textSize="@dimen/text_size_medium"
         android:text="@string/forecast_here"
         />
 
@@ -34,6 +35,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:textColor="@color/colorTextLight"
+        android:textSize="@dimen/text_size_medium"
         android:text="@string/my_locations"
         />
 
@@ -46,6 +48,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:textColor="@color/colorTextLight"
+        android:textSize="@dimen/text_size_medium"
         android:text="@string/show_on_map"
         />
 

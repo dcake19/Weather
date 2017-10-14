@@ -13,8 +13,8 @@ public class WeatherContract {
     }
 
     interface Presenter{
-        void downloadForecast();
-        void downloadForecast(String name,double latitude,double longitude);
+        void downloadForecast(boolean daily);
+        void downloadForecast(String name,double latitude,double longitude,boolean daily);
         String getName();
         String getDate(int position);
         String getSummaryDaily(int position);
@@ -29,6 +29,15 @@ public class WeatherContract {
         void saveLocation(String locationName);
         String getShareSubject(Context context,int days);
         String getShareBodyDaily(Context context,int days);
-        String getWeatherSpeak(int position);
+
+        String getWeatherSpeakDaily(int position);
+        String getTime(int position);
+        String getTempHourly(int position);
+        String getWindSpeedHourly(Context context,int position);
+        String getPrecipHourly(Context context,int position);
+        int getIconHourly(Context context,int position);
+        String getWeatherSpeakHourly(int position);
+        String getShareSubjectHourly(Context context);
+        String getShareBodyHourly(Context context);
     }
 }

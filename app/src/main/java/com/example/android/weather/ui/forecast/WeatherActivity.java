@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.location.Location;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
@@ -14,10 +15,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -44,6 +47,7 @@ public class WeatherActivity extends AppCompatActivity implements WeatherContrac
     SharedPreferences mSharedPreferences;
     private final String SAVED_DATA = "saved_data";
     private final String INIT_SELECTION = "init_selection";
+    private final String DAILY_SELECTION = "daily_selection";
 
     public static final String NAME = "name";
     public static final String LATITUDE = "latitude";
@@ -57,6 +61,7 @@ public class WeatherActivity extends AppCompatActivity implements WeatherContrac
     @BindView(R.id.location_name) TextView mLocationName;
     @BindView(R.id.spinner_number_days) Spinner mSpinnerDays;
     @BindView(R.id.btn_share) ImageButton mButtonShare;
+    @BindView(R.id.btn_switch) Button mButtonSwitch;
     private TextToSpeech mTextToSpeech;
 
     private boolean mInitialized = false;
@@ -67,6 +72,8 @@ public class WeatherActivity extends AppCompatActivity implements WeatherContrac
     private LocationRequest mLocationRequest;
     private int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 1;
 
+    private boolean mDaily = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,8 +81,25 @@ public class WeatherActivity extends AppCompatActivity implements WeatherContrac
 
         ButterKnife.bind(this);
 
-        mPresenter = new WeatherPresenter(this,new WeatherRepository(getBaseContext()));
         mSharedPreferences = getBaseContext().getSharedPreferences(SAVED_DATA,Context.MODE_PRIVATE);
+        mDaily = mSharedPreferences.getBoolean(DAILY_SELECTION,true);
+
+        if(!mDaily){
+            mButtonSwitch.setText(getResources().getString(R.string.show_daily));
+        }else{
+            mButtonSwitch.setText(getResources().getString(R.string.show_hourly));
+        }
+
+        mSpinnerDays.setEnabled(mDaily);
+
+       // if(savedInstanceState==null) {
+        mPresenter = new WeatherPresenter(this,new WeatherRepository(getBaseContext()));
+      //      mPresenter = WeatherPresenterClient.getPresenter(true, this, new WeatherRepository(getBaseContext()));
+     //   }
+      //  else{
+      //      mPresenter = WeatherPresenterClient.getPresenter(false, this, new WeatherRepository(getBaseContext()));
+    //    }
+
         mButtonShare.setEnabled(false);
 
         setupSpinner();
@@ -89,7 +113,7 @@ public class WeatherActivity extends AppCompatActivity implements WeatherContrac
         double lng = intent.getDoubleExtra(LONGITUDE,200);
 
         if(lat!=200 && lng!=200){
-            mPresenter.downloadForecast(name,lat,lng);
+            mPresenter.downloadForecast(name,lat,lng,mDaily);
 
         }
         else {
@@ -158,8 +182,11 @@ public class WeatherActivity extends AppCompatActivity implements WeatherContrac
     private void setRecyclerView(){
         mDailyAdapter = new WeatherDisplayAdapter(this,mPresenter,mTextToSpeech,true,0);
         mRecyclerView.setAdapter(mDailyAdapter);
-        GridLayoutManager glm = new GridLayoutManager(this,1);
-        mRecyclerView.setLayoutManager(glm);
+
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        else
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
     }
 
 
@@ -167,7 +194,7 @@ public class WeatherActivity extends AppCompatActivity implements WeatherContrac
     @Override
     public void displayDaily(int day) {
         int initSelection = mSharedPreferences.getInt(INIT_SELECTION,6);
-        mDailyAdapter.setSize(initSelection+1);
+        mDailyAdapter.setSize(initSelection+1,true);
         mButtonShare.setEnabled(true);
        // mLocationName.setText(mPresenter.getName());
     }
@@ -175,6 +202,8 @@ public class WeatherActivity extends AppCompatActivity implements WeatherContrac
     @Override
     public void displayHourly(int hours) {
 
+        mDailyAdapter.setSize(24,false);
+        mButtonShare.setEnabled(true);
     }
 
     @Override
@@ -189,7 +218,7 @@ public class WeatherActivity extends AppCompatActivity implements WeatherContrac
                         new View.OnClickListener(){
                             @Override
                             public void onClick(View v) {
-                                mPresenter.downloadForecast();
+                                mPresenter.downloadForecast(mDaily);
                             }
                         }
                 )
@@ -206,11 +235,36 @@ public class WeatherActivity extends AppCompatActivity implements WeatherContrac
     @OnClick(R.id.btn_share)
     public void share(){
         FragmentManager fm = this.getSupportFragmentManager();
-        int days = mSpinnerDays.getSelectedItemPosition()+1;
-        ShareDialog shareDialog = new ShareDialog(
-                mPresenter.getShareSubject(getBaseContext(),days),
-                mPresenter.getShareBodyDaily(getBaseContext(),days));
+        ShareDialog shareDialog;
+        if(mDaily) {
+            int days = mSpinnerDays.getSelectedItemPosition() + 1;
+            shareDialog = new ShareDialog(
+                    mPresenter.getShareSubject(getBaseContext(), days),
+                    mPresenter.getShareBodyDaily(getBaseContext(), days));
+        }
+        else{
+            shareDialog = new ShareDialog(
+                    mPresenter.getShareSubjectHourly(getBaseContext()),
+                    mPresenter.getShareBodyHourly(getBaseContext()));
+        }
+
         shareDialog.show(fm,"dialog_share");
+    }
+
+    @OnClick(R.id.btn_switch)
+    public void switchTime(){
+        if(mDaily){
+            mDaily = false;
+            mSpinnerDays.setEnabled(mDaily);
+            mDailyAdapter.setSize(24,mDaily);
+            mButtonSwitch.setText(getResources().getString(R.string.show_daily));
+        }else {
+            mDaily = true;
+            int size = mSpinnerDays.getSelectedItemPosition();
+            mDailyAdapter.setSize(size+1,mDaily);
+            mSpinnerDays.setEnabled(mDaily);
+            mButtonSwitch.setText(getResources().getString(R.string.show_hourly));
+        }
     }
 
     public void saveLocation(String locationName){
@@ -290,15 +344,19 @@ public class WeatherActivity extends AppCompatActivity implements WeatherContrac
 
     @Override
     public synchronized void onLocationChanged(Location location) {
-        if(!mLocationSet) {
+        if(!mLocationSet && location!=null) {
             mLocationSet = true;
-            mPresenter.downloadForecast(DISPLAY_LAT_LNG, location.getLatitude(), location.getLongitude());
+            mPresenter.downloadForecast(DISPLAY_LAT_LNG, location.getLatitude(), location.getLongitude(),mDaily);
             mGoogleApiClient.disconnect();
         }
     }
 
     @Override
     protected void onPause() {
+
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(DAILY_SELECTION,mDaily);
+        editor.commit();
 
         if(mTextToSpeech!=null){
             mTextToSpeech.stop();

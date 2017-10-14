@@ -17,7 +17,8 @@
 
     <string name="save_location">Save\nLocation</string>
     <string name="display_number_days">Days</string>
-
+    <string name="show_daily">Show\nDaily</string>
+    <string name="show_hourly">Show\nHourly</string>
 
     <string name="enter_location">Enter Location:</string>
     <string name="latitude">Latitude:</string>

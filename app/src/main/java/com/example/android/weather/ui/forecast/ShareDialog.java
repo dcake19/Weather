@@ -17,7 +17,6 @@ import com.example.android.weather.R;
 @SuppressLint("ValidFragment")
 public class ShareDialog extends DialogFragment implements View.OnClickListener{
 
-  //  View rootview;
     private String mSubject;
     private String mBody;
 
