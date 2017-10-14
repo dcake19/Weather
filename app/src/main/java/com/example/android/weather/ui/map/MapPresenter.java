@@ -127,7 +127,7 @@ public class MapPresenter implements MapContract.Presenter{
                     public void onComplete() {
 
                     }
-    });
+                });
 
     }
 

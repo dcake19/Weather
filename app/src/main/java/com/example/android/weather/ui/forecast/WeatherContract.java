@@ -8,6 +8,7 @@ public class WeatherContract {
     interface View{
         void displayDaily(int day);
         void displayHourly(int hours);
+        void setName(String name);
     }
 
     interface Presenter{

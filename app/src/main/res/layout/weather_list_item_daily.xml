@@ -1,48 +1,141 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              xmlns:card_view="http://schemas.android.com/apk/res-auto"
+              android:gravity="center_horizontal"
               android:id="@+id/layout_weather"
-              android:orientation="vertical"
+              android:orientation="horizontal"
               android:layout_width="match_parent"
-              android:layout_height="wrap_content">
+              android:layout_height="wrap_content"
+              android:paddingTop="@dimen/padding_small"
+              android:paddingBottom="@dimen/padding_small"
+              android:paddingLeft="@dimen/padding_medium"
+              android:paddingRight="@dimen/padding_medium">
 
-    <TextView
-        android:id="@+id/date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_view"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="@dimen/card_elevation"
+        card_view:cardCornerRadius="@dimen/card_corner_radius">
 
-    <ImageView
-        android:id="@+id/weather_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+    <LinearLayout
+                  android:gravity="center_horizontal"
+                  android:orientation="horizontal"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/summary"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
 
-    <TextView
-        android:id="@+id/high_temp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
 
-    <TextView
-        android:id="@+id/low_temp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        <LinearLayout
+                  android:orientation="vertical"
+                  android:layout_width="wrap_content"
+                  android:layout_height="match_parent"
+                  android:layout_margin="@dimen/padding_medium">
 
-    <TextView
-        android:id="@+id/wind_speed"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+            <TextView
+                android:id="@+id/date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textColor="@color/colorTextMedium"
+                android:textSize="@dimen/text_size_medium"
+                tools:text="Sat 23 May"/>
 
+            <ImageView
+                android:id="@+id/weather_icon"
+                android:layout_width="@dimen/weather_icon_size"
+                android:layout_height="@dimen/weather_icon_size"
+                android:layout_gravity="center"
+                tools:background="@drawable/art_clear_day"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/padding_medium"
+            >
+
+            <org.apmem.tools.layouts.FlowLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                >
+                <TextView
+                    android:id="@+id/high_temp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/text_size_large"
+                    android:textColor="@color/colorTextDark"
+                    android:paddingRight="@dimen/padding_medium"
+                    android:paddingLeft="@dimen/padding_medium"
+                    tools:text="24 C"/>
+
+
+                <TextView
+                    android:id="@+id/low_temp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textSize="@dimen/text_size_medium"
+                    android:textColor="@color/colorTextMedium"
+                    android:paddingRight="@dimen/padding_medium"
+                    android:paddingLeft="@dimen/padding_medium"
+                    tools:text="8 C"/>
+             </org.apmem.tools.layouts.FlowLayout>
+
+            <org.apmem.tools.layouts.FlowLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/text_size_small"
+                    android:textColor="@color/colorTextMedium"
+                    android:layout_gravity="center_vertical"
+                    android:paddingRight="@dimen/padding_medium"
+                    android:text="@string/wind_speed"/>
+
+                <TextView
+                    android:id="@+id/wind_speed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/text_size_medium"
+                    android:textColor="@color/colorTextMedium"
+                    android:layout_gravity="center_vertical"
+                    tools:text="3.2 m/s"/>
+
+            </org.apmem.tools.layouts.FlowLayout>
+<!--
     <TextView
         android:id="@+id/humidity"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        />
+-->
+        <TextView
+            android:id="@+id/precip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_size_medium"
+            android:textColor="@color/colorTextMedium"
+            android:layout_gravity="center_vertical"
+            tools:text="23% chance of rain"/>
 
-    <TextView
-        android:id="@+id/precip"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+       <!-- <TextView
+            android:id="@+id/summary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_size_medium"
+            android:textColor="@color/colorTextMedium"
+            tools:text="This is the weather summary"/>-->
 
 </LinearLayout>
+
+</LinearLayout>
+</android.support.v7.widget.CardView>
+    </LinearLayout>

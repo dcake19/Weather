@@ -20,10 +20,11 @@ public class LocationDialog extends DialogFragment implements View.OnClickListen
     private String mLatitude;
     private String mLongitude;
     private EditText mEditText;
+    private String mName;
 
-
-    public LocationDialog(WeatherActivity activity,String latitude, String longitude) {
+    public LocationDialog(WeatherActivity activity,String name,String latitude, String longitude) {
         mWeatherActivity = activity;
+        mName = name;
         mLatitude = latitude;
         mLongitude = longitude;
     }
@@ -34,7 +35,7 @@ public class LocationDialog extends DialogFragment implements View.OnClickListen
         View rootview =  inflater.inflate(R.layout.weather_location_dialog, container, false);
 
         mEditText = (EditText) rootview.findViewById(R.id.edittext_location_name);
-
+        mEditText.setText(mName);
         TextView latitude = (TextView) rootview.findViewById(R.id.textview_latitude);
         latitude.setText(mLatitude);
         TextView longitude = (TextView) rootview.findViewById(R.id.textview_longitude);

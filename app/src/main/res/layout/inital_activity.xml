@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
+    android:background="@color/colorBackground"
     >
     <LinearLayout
         android:id="@+id/episode_layout"
@@ -15,6 +15,9 @@
 
     <Button
         android:id="@+id/btn_forecast_here"
+        android:theme="@style/AppTheme.Button"
+        android:padding="@dimen/padding_large"
+        android:layout_margin="@dimen/padding_medium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -23,6 +26,9 @@
 
     <Button
         android:id="@+id/btn_my_locations"
+        android:theme="@style/AppTheme.Button"
+        android:padding="@dimen/padding_large"
+        android:layout_margin="@dimen/padding_medium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -31,6 +37,9 @@
 
     <Button
         android:id="@+id/btn_show_on_map"
+        android:theme="@style/AppTheme.Button"
+        android:padding="@dimen/padding_large"
+        android:layout_margin="@dimen/padding_medium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"

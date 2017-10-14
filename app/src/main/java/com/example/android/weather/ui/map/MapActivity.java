@@ -131,9 +131,11 @@ public class MapActivity extends AppCompatActivity
         }
 
         mMap.setOnMarkerClickListener(this);
-        int padding = 120; // offset from edges of the map in pixels
-        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(builder.build(), padding);
-        mMap.moveCamera(cu);
+        if(mMarkers.size()>0) {
+            int padding = 120; // offset from edges of the map in pixels
+            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(builder.build(), padding);
+            mMap.moveCamera(cu);
+        }
 
     }
 

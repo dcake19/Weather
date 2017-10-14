@@ -52,11 +52,11 @@ public class WeatherDisplayAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             ViewHolderWeatherDaily holderDaily = (ViewHolderWeatherDaily) holder;
             holderDaily.icon.setImageResource(mPresenter.getIconDaily(mContext,position));
             holderDaily.date.setText(mPresenter.getDate(position));
-            holderDaily.summary.setText(mPresenter.getSummaryDaily(position));
+     //       holderDaily.summary.setText(mPresenter.getSummaryDaily(position));
             holderDaily.highTemp.setText(mPresenter.getHighTemp(mContext,position));
             holderDaily.lowTemp.setText(mPresenter.getLowTemp(mContext,position));
             holderDaily.windSpeed.setText(mPresenter.getWindSpeedDaily(mContext,position));
-            holderDaily.humidity.setText(mPresenter.getHumidityDaily(mContext,position));
+       //     holderDaily.humidity.setText(mPresenter.getHumidityDaily(mContext,position));
             holderDaily.precip.setText(mPresenter.getPrecipDaily(mContext,position));
 
         }
@@ -71,11 +71,11 @@ public class WeatherDisplayAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         @BindView(R.id.layout_weather) LinearLayout mLayout;
         @BindView(R.id.weather_icon) ImageView icon;
         @BindView(R.id.date) TextView date;
-        @BindView(R.id.summary) TextView summary;
+     //   @BindView(R.id.summary) TextView summary;
         @BindView(R.id.high_temp) TextView highTemp;
         @BindView(R.id.low_temp) TextView lowTemp;
         @BindView(R.id.wind_speed) TextView windSpeed;
-        @BindView(R.id.humidity) TextView humidity;
+      //  @BindView(R.id.humidity) TextView humidity;
         @BindView(R.id.precip) TextView precip;
 
         public ViewHolderWeatherDaily(View itemView) {

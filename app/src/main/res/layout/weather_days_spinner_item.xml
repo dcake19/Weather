@@ -5,5 +5,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-
+    android:textSize="@dimen/text_size_medium"
+    android:textColor="@color/colorTextLight"
+    android:paddingLeft="@dimen/padding_large"
+    android:paddingRight="@dimen/padding_large"
+    android:paddingTop="@dimen/padding_medium"
+    android:paddingBottom="@dimen/padding_medium"
+    android:background="@color/colorPrimaryDark"
     tools:text="1"/>

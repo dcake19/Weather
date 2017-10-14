@@ -17,14 +17,16 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:background="@color/colorPrimary">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingLeft="8dp"
                 android:paddingRight="8dp"
-                android:textSize="16sp"
+                android:textSize="@dimen/text_size_small"
+                android:textColor="@color/colorTextLight"
                 android:text="@string/search"
                 android:textStyle="normal|bold"/>
 
@@ -38,8 +40,9 @@
 
             <ImageButton
                 android:theme="@style/AppTheme.Button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/btn_square_side"
+                android:layout_height="@dimen/btn_square_side"
+                android:layout_margin="@dimen/btn_square_margin"
                 app:srcCompat="@drawable/ic_search_white_24dp"
                 android:id="@+id/btn_search"
                 />
@@ -50,30 +53,34 @@
                 android:orientation="horizontal"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true">
-
+                android:background="@color/colorPrimary">
 
                 <Button
                     android:id="@+id/btn_map"
+                    android:theme="@style/AppTheme.Button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/map"
+                    android:textSize="@dimen/text_size_small"
                     android:layout_weight="1" />
 
                 <Button
                     android:id="@+id/btn_terrain"
+                    android:theme="@style/AppTheme.Button"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/terrain"
+                    android:textSize="@dimen/text_size_small"
                     android:layout_weight="1" />
 
                 <Button
                     android:id="@+id/btn_satellite"
+                    android:theme="@style/AppTheme.Button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/satellite"
+                    android:textSize="@dimen/text_size_small"
                     android:layout_weight="1" />
             </LinearLayout>
 

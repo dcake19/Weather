@@ -4,8 +4,12 @@ package com.example.android.weather.ui.forecast;
 import android.content.Context;
 import android.util.Log;
 
+import com.example.android.weather.BuildConfig;
 import com.example.android.weather.R;
 import com.example.android.weather.db.WeatherRepository;
+import com.example.android.weather.rest.ApiServiceLocation;
+import com.example.android.weather.rest.citysearch.AddressComponent;
+import com.example.android.weather.rest.citysearch.CitySearchResults;
 import com.example.android.weather.rest.model.Datum__;
 import com.example.android.weather.ui.forecast.WeatherContract;
 import com.example.android.weather.rest.ApiService;
@@ -16,6 +20,7 @@ import com.example.android.weather.rest.model.WeatherForecast;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -27,6 +32,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
 
     private WeatherContract.View mView;
     private ApiService mApiService;
+    private ApiServiceLocation mApiServiceLocation;
     private WeatherRepository mRepository;
     private Daily mDaily;
     private Hourly mHourly;
@@ -41,6 +47,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
         mView = view;
         mRepository = repository;
         mApiService = ApiUtils.getApiService();
+        mApiServiceLocation = ApiUtils.getApiServiceLocation();
     }
 
     @Override
@@ -52,7 +59,56 @@ public class WeatherPresenter implements WeatherContract.Presenter {
         mStringLatitude = String.valueOf(latitude);
         mStringLongitude = String.valueOf(longitude);
 
-        mName = name.equals(WeatherActivity.DISPLAY_LAT_LNG) ? getLatLong() : name;
+        if(name.equals(WeatherActivity.DISPLAY_LAT_LNG)){
+            mApiServiceLocation.getLocation(getLatLong(), BuildConfig.GEOCODING_API_KEY).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Observer<CitySearchResults>(){
+                        @Override
+                        public void onSubscribe(Disposable d) {
+
+                        }
+
+                        @Override
+                        public void onNext(CitySearchResults citySearchResults) {
+                            if(citySearchResults.getResults().size() >= 1) {
+                                List<AddressComponent> addressComponent = citySearchResults.getResults().get(0).getAddressComponents();
+
+                                boolean nameFound = false;
+                                int i=0;
+                                while(!nameFound && i<addressComponent.size()){
+                                    List<String> types = addressComponent.get(i).getTypes();
+                                    for(int j=0;j<types.size();j++){
+                                        if(types.get(j).equals("locality") || types.get(j).equals("political") || types.get(j).equals("postal_town")) {
+                                            mName = addressComponent.get(i).getShortName();
+                                            nameFound = true;
+                                            break;
+                                        }
+                                    }
+                                    i++;
+                                }
+                            }
+                            mView.setName(mName);
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            mName = "";
+                            mView.setName(getLatLong());
+                        }
+
+                        @Override
+                        public void onComplete() {
+
+                        }
+                    });
+
+
+
+        }else{
+            mName = name;
+            mView.setName(mName);
+        }
+
+       // mName = name.equals(WeatherActivity.DISPLAY_LAT_LNG) ? getLatLong() : name;
 
         mApiService.getForecast(getLatLong()).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<WeatherForecast>() {
@@ -65,12 +121,12 @@ public class WeatherPresenter implements WeatherContract.Presenter {
                     public void onNext(WeatherForecast weatherForecast) {
 
                         mDaily = weatherForecast.getDaily();
-                        mHourly = weatherForecast.getHourly();
+                       // mHourly = weatherForecast.getHourly();
 
                         if(mShowDaily)
                             mView.displayDaily(mDaily.getData().size());
-                        else
-                            mView.displayHourly(mHourly.getData().size());
+//                        else
+//                            mView.displayHourly(mHourly.getData().size());
 
                     }
 
@@ -108,19 +164,20 @@ public class WeatherPresenter implements WeatherContract.Presenter {
 
     @Override
     public String getHighTemp(Context context, int position) {
-        return context.getString(R.string.high) + " " + mDaily.getData().get(position+1).getTemperatureHigh() + "\u2103";
+        String temp = formatDoubleAsString(0,mDaily.getData().get(position+1).getTemperatureHigh());
+        return temp + "\u2103";
     }
 
     @Override
     public String getLowTemp(Context context,int position) {
-        return context.getString(R.string.low) + " " + mDaily.getData().get(position+1).getTemperatureLow()  + "\u2103";
+        String temp = formatDoubleAsString(0,mDaily.getData().get(position+1).getTemperatureLow());
+        return temp + "\u2103";
     }
 
     @Override
     public String getWindSpeedDaily(Context context,int position) {
-        return context.getString(R.string.wind_speed)
-                + " " + mDaily.getData().get(position+1).getWindSpeed()
-                + " " + context.getString(R.string.wind_speed_units) ;
+        String windSpeed = formatDoubleAsString(1, mDaily.getData().get(position+1).getWindSpeed());
+        return  windSpeed + " " + context.getString(R.string.wind_speed_units) ;
     }
 
     @Override
@@ -132,16 +189,28 @@ public class WeatherPresenter implements WeatherContract.Presenter {
 
     @Override
     public String getPrecipDaily(Context context,int position) {
-        String chance = Double.toString(mDaily.getData().get(position+1).getPrecipProbability()*100);
+        String chance = formatDoubleAsString(0,mDaily.getData().get(position+1).getPrecipProbability()*100);
+
+        String precipType = mDaily.getData().get(position+1).getPrecipType();
+        if(precipType == null) precipType = "rain";
         return chance + "\u0025"
                 + " " +context.getString(R.string.chance)
-                + " " + mDaily.getData().get(position+1).getPrecipType();
+                + " " + precipType;
     }
 
-    private String getHumidityDailyEmail(Context context,int position) {
-        return context.getString(R.string.humidity)
-                + " " + mDaily.getData().get(position+1).getHumidity()
-                + " pct.";
+
+    private String formatDoubleAsString(int decimalsPlaces,Double value){
+        if (decimalsPlaces>0) decimalsPlaces++;
+        String string = Double.toString(value);
+        if(value>=10) {
+            if(string.length()>=2+decimalsPlaces)
+                string = string.substring(0, 2 + decimalsPlaces);
+        }
+        else
+        if(string.length()>=1+decimalsPlaces)
+            string = string.substring(0,1+decimalsPlaces);
+
+        return string;
     }
 
     private String getPrecipDailyEmail(Context context,int position) {
@@ -150,6 +219,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
                 + " " +context.getString(R.string.chance)
                 + " " + mDaily.getData().get(position+1).getPrecipType();
     }
+
 
     @Override
     public int getIconDaily(Context context, int position) {
@@ -201,7 +271,6 @@ public class WeatherPresenter implements WeatherContract.Presenter {
             shareBody.append(getHighTemp(context,i)+"\n");
             shareBody.append(getLowTemp(context,i)+"\n");
             shareBody.append(getWindSpeedDaily(context,i)+"\n");
-            shareBody.append(getHumidityDailyEmail(context,i)+"\n");
             shareBody.append(getPrecipDailyEmail(context,i)+"\n");
             shareBody.append("\n");
         }
@@ -213,11 +282,13 @@ public class WeatherPresenter implements WeatherContract.Presenter {
     public String getWeatherSpeak(int position) {
         Datum__ data = mDaily.getData().get(position+1);
         Double precipChance = (data.getPrecipProbability()*100);
+        String precipType = data.getPrecipType();
+        if(precipType==null) precipType = "rain";
 
-        return data.getSummary() + "The high temperature for the day is " + data.getTemperatureHigh() + " degrees celcius." +
-                "The low temperature for the day is " + data.getTemperatureLow() + " degrees celcius." +
-                "The wind speed is " + data.getWindSpeed() + " meters per second." +
-                "There is a " + precipChance.intValue() + "percent chance of " + data.getPrecipType();
+        return data.getSummary() + "The high temperature for the day is " + data.getTemperatureHigh().intValue() + " degrees celcius." +
+                "The low temperature for the day is " + data.getTemperatureLow().intValue() + " degrees celcius." +
+                "The wind speed is " + formatDoubleAsString(1, data.getWindSpeed()) + " meters per second." +
+                "There is a " + precipChance.intValue() + "percent chance of " + precipType;
     }
 
     private int weatherIcon(String icon){
@@ -237,9 +308,9 @@ public class WeatherPresenter implements WeatherContract.Presenter {
             return R.drawable.art_fog;
         else if(icon.equals("cloudy"))
             return R.drawable.art_cloudy;
-        else if(icon.equals("partly-cloudy-day"))
-            return R.drawable.art_partly_cloudy_day;
-        return R.drawable.art_partly_cloudy_night;
+        else if(icon.equals("partly-cloudy-night"))
+            return R.drawable.art_partly_cloudy_night;
+        return R.drawable.art_partly_cloudy_day;
     }
 
 
