@@ -37,4 +37,7 @@
     <string name="add_to_my_locations">Add to my locations</string>
     <string name="search">Search:</string>
 
+
+    <string name="error">There was an error</string>
+    <string name="retry">Retry</string>
 </resources>

@@ -51,6 +51,11 @@ public class WeatherPresenter implements WeatherContract.Presenter {
     }
 
     @Override
+    public void downloadForecast() {
+        downloadForecast(mName,mLatitude,mLongitude);
+    }
+
+    @Override
     public void downloadForecast(String name,double latitude,double longitude) {
 
         mLatitude = latitude;
@@ -60,6 +65,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
         mStringLongitude = String.valueOf(longitude);
 
         if(name.equals(WeatherActivity.DISPLAY_LAT_LNG)){
+            mName = WeatherActivity.DISPLAY_LAT_LNG;
             mApiServiceLocation.getLocation(getLatLong(), BuildConfig.GEOCODING_API_KEY).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Observer<CitySearchResults>(){
                         @Override
@@ -108,7 +114,6 @@ public class WeatherPresenter implements WeatherContract.Presenter {
             mView.setName(mName);
         }
 
-       // mName = name.equals(WeatherActivity.DISPLAY_LAT_LNG) ? getLatLong() : name;
 
         mApiService.getForecast(getLatLong()).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<WeatherForecast>() {
@@ -132,7 +137,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
 
                     @Override
                     public void onError(Throwable e) {
-
+                        mView.error();
                     }
 
                     @Override
@@ -178,13 +183,6 @@ public class WeatherPresenter implements WeatherContract.Presenter {
     public String getWindSpeedDaily(Context context,int position) {
         String windSpeed = formatDoubleAsString(1, mDaily.getData().get(position+1).getWindSpeed());
         return  windSpeed + " " + context.getString(R.string.wind_speed_units) ;
-    }
-
-    @Override
-    public String getHumidityDaily(Context context,int position) {
-        return context.getString(R.string.humidity)
-                + " " + mDaily.getData().get(position+1).getHumidity()
-                + "\u0025";
     }
 
     @Override

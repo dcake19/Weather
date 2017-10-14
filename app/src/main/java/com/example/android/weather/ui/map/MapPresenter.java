@@ -41,7 +41,6 @@ public class MapPresenter implements MapContract.Presenter{
         mRepository = repository;
         mView = view;
         mApiServiceLocation = ApiUtils.getApiServiceLocation();
-        //searchForLocation("London");
     }
 
     @Override
@@ -120,7 +119,7 @@ public class MapPresenter implements MapContract.Presenter{
 
                     @Override
                     public void onError(Throwable e) {
-
+                        mView.error();
                     }
 
                     @Override

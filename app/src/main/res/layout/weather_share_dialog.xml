@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:app="http://schemas.android.com/apk/res-auto"
               android:orientation="vertical"
+              android:padding="@dimen/padding_large"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
               android:layout_gravity="center">
@@ -24,8 +25,9 @@
                 android:id="@+id/btn_email"
                 android:theme="@style/AppTheme.Button"
                 app:srcCompat="@drawable/ic_email_white_24dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/btn_square_side"
+                android:layout_height="@dimen/btn_square_side"
+                android:layout_margin="@dimen/btn_square_margin"
                 android:gravity="center"/>
             <TextView
                 android:layout_width="wrap_content"

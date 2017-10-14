@@ -7,6 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
+
     <LinearLayout
         android:id="@+id/layout_map"
         android:orientation="vertical"
@@ -35,6 +36,7 @@
                 android:id="@+id/txt_search"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:textColor="@color/colorTextLight"
                 android:layout_weight="1"/>
 
 
@@ -62,6 +64,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/map"
                     android:textSize="@dimen/text_size_small"
+                    android:textColor="@color/colorTextLight"
                     android:layout_weight="1" />
 
                 <Button
@@ -72,6 +75,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/terrain"
                     android:textSize="@dimen/text_size_small"
+                    android:textColor="@color/colorTextLight"
                     android:layout_weight="1" />
 
                 <Button
@@ -81,6 +85,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/satellite"
                     android:textSize="@dimen/text_size_small"
+                    android:textColor="@color/colorTextLight"
                     android:layout_weight="1" />
             </LinearLayout>
 

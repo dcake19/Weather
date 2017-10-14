@@ -60,7 +60,13 @@ public class MyLocationsPresenter implements MyLocationsContract.Presenter{
 
     @Override
     public String getLatLong(int position) {
-        return mLocations.get(position).latitude + ", " + mLocations.get(position).longitude;
+        double lat = mLocations.get(position).latitude;
+        String sLat = String.valueOf(lat);
+
+        double lng = mLocations.get(position).longitude;
+        String sLng = String.valueOf(lng);
+
+        return sLat + ", " + sLng;
     }
 
     @Override

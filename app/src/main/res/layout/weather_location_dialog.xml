@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
+              android:padding="@dimen/padding_large"
               android:layout_width="match_parent"
               android:layout_height="wrap_content">
 
@@ -25,12 +26,14 @@
                 android:gravity="center_vertical"
                 >
                 <TextView
+                    android:padding="@dimen/padding_small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/enter_location"/>
                 <EditText
                     android:id="@+id/edittext_location_name"
-                    android:layout_width="wrap_content"
+                    android:padding="@dimen/padding_small"
+                    android:layout_width="100dp"
                     android:layout_height="wrap_content"/>
 
             </LinearLayout>
@@ -44,9 +47,11 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:padding="@dimen/padding_small"
                     android:text="@string/latitude"/>
                 <TextView
                     android:id="@+id/textview_latitude"
+                    android:padding="@dimen/padding_small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 
@@ -58,14 +63,19 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 >
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/longitude"/>
+                    android:text="@string/longitude"
+                    android:padding="@dimen/padding_small"
+                    android:id="@+id/textView"/>
+
                 <TextView
                     android:id="@+id/textview_longitude"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/padding_small"/>
 
             </LinearLayout>
         </LinearLayout>

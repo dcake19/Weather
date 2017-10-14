@@ -170,5 +170,18 @@ public class MapActivity extends AppCompatActivity
         return true;
     }
 
+    @Override
+    public void error() {
+        Snackbar.make(mLayout, getResources().getString(R.string.error), Snackbar.LENGTH_INDEFINITE)
+                .setAction(getResources().getString(R.string.retry),
+                        new View.OnClickListener(){
+                            @Override
+                            public void onClick(View v) {
+                                mPresenter.searchForLocation(mSearchTerm.getText().toString());
+                            }
+                        }
+                )
+                .show();
+    }
 
 }

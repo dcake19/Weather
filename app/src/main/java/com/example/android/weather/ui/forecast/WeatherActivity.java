@@ -2,11 +2,13 @@ package com.example.android.weather.ui.forecast;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +18,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -38,6 +41,10 @@ public class WeatherActivity extends AppCompatActivity implements WeatherContrac
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
 
+    SharedPreferences mSharedPreferences;
+    private final String SAVED_DATA = "saved_data";
+    private final String INIT_SELECTION = "init_selection";
+
     public static final String NAME = "name";
     public static final String LATITUDE = "latitude";
     public static final String LONGITUDE = "longitude";
@@ -49,13 +56,12 @@ public class WeatherActivity extends AppCompatActivity implements WeatherContrac
     @BindView(R.id.recyclerview_weather) RecyclerView mRecyclerView;
     @BindView(R.id.location_name) TextView mLocationName;
     @BindView(R.id.spinner_number_days) Spinner mSpinnerDays;
-
+    @BindView(R.id.btn_share) ImageButton mButtonShare;
     private TextToSpeech mTextToSpeech;
 
     private boolean mInitialized = false;
     private boolean mThisLocation = false;
     private boolean mLocationSet = false;
-
 
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
@@ -69,11 +75,12 @@ public class WeatherActivity extends AppCompatActivity implements WeatherContrac
         ButterKnife.bind(this);
 
         mPresenter = new WeatherPresenter(this,new WeatherRepository(getBaseContext()));
+        mSharedPreferences = getBaseContext().getSharedPreferences(SAVED_DATA,Context.MODE_PRIVATE);
+        mButtonShare.setEnabled(false);
 
         setupSpinner();
         setTextToSpeech();
         setRecyclerView();
-
 
         Intent intent = getIntent();
 
@@ -119,17 +126,24 @@ public class WeatherActivity extends AppCompatActivity implements WeatherContrac
     }
 
     private void setupSpinner(){
+
+        int initSelection = mSharedPreferences.getInt(INIT_SELECTION,6);
+
         String[] day = {"1","2","3","4","5","6","7"};
 
         ArrayAdapter<String> adapterDays = new ArrayAdapter<>(
             this,R.layout.weather_days_spinner_item,day);
         mSpinnerDays.setAdapter(adapterDays);
-        mSpinnerDays.setSelection(6);
+        mSpinnerDays.setSelection(initSelection);
         mSpinnerDays.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(mInitialized)
-                    mDailyAdapter.setSize(position+1);
+                if(mInitialized) {
+                    mDailyAdapter.setSize(position + 1);
+                    SharedPreferences.Editor editor = mSharedPreferences.edit();
+                    editor.putInt(INIT_SELECTION,position);
+                    editor.commit();
+                }
 
                 mInitialized = true;
             }
@@ -152,7 +166,9 @@ public class WeatherActivity extends AppCompatActivity implements WeatherContrac
 
     @Override
     public void displayDaily(int day) {
-        mDailyAdapter.setSize(7);
+        int initSelection = mSharedPreferences.getInt(INIT_SELECTION,6);
+        mDailyAdapter.setSize(initSelection+1);
+        mButtonShare.setEnabled(true);
        // mLocationName.setText(mPresenter.getName());
     }
 
@@ -164,6 +180,20 @@ public class WeatherActivity extends AppCompatActivity implements WeatherContrac
     @Override
     public void setName(String name) {
         mLocationName.setText(name);
+    }
+
+    @Override
+    public void error() {
+        Snackbar.make(mRecyclerView, getResources().getString(R.string.error), Snackbar.LENGTH_INDEFINITE)
+                .setAction(getResources().getString(R.string.retry),
+                        new View.OnClickListener(){
+                            @Override
+                            public void onClick(View v) {
+                                mPresenter.downloadForecast();
+                            }
+                        }
+                )
+                .show();
     }
 
     @OnClick(R.id.btn_save_location)
@@ -187,7 +217,6 @@ public class WeatherActivity extends AppCompatActivity implements WeatherContrac
         mPresenter.saveLocation(locationName);
     }
 
-
     public static Intent getIntent(Context context,String name, double latitude, double longitude){
         Intent intent = new Intent(context, WeatherActivity.class);
         intent.putExtra(NAME,name);
@@ -195,7 +224,6 @@ public class WeatherActivity extends AppCompatActivity implements WeatherContrac
         intent.putExtra(LONGITUDE,longitude);
         return intent;
     }
-
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
@@ -216,22 +244,11 @@ public class WeatherActivity extends AppCompatActivity implements WeatherContrac
 
     }
 
-
-//    private void setOldLocation(){
-//        if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) ==
-//                PackageManager.PERMISSION_GRANTED) {
-//            Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-//            mPresenter.downloadForecast(DISPLAY_LAT_LNG,location.getLatitude(),location.getLongitude());
-//        }
-//    }
-
     private void setLocation(){
         if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) ==
                 PackageManager.PERMISSION_GRANTED) {
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
             setLastLocation();
-           // LocationServices.FusedLocationApi.flushLocations(mGoogleApiClient);
-           // onLocationChanged(LocationServices.FusedLocationApi..getLastLocation(mGoogleApiClient));
         }
     }
 

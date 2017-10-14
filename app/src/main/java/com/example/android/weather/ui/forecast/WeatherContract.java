@@ -9,9 +9,11 @@ public class WeatherContract {
         void displayDaily(int day);
         void displayHourly(int hours);
         void setName(String name);
+        void error();
     }
 
     interface Presenter{
+        void downloadForecast();
         void downloadForecast(String name,double latitude,double longitude);
         String getName();
         String getDate(int position);
@@ -19,7 +21,6 @@ public class WeatherContract {
         String getHighTemp(Context context,int position);
         String getLowTemp(Context context,int position);
         String getWindSpeedDaily(Context context,int position);
-        String getHumidityDaily(Context context,int position);
         String getPrecipDaily(Context context,int position);
         int getIconDaily(Context context,int position);
         String getLatLong();

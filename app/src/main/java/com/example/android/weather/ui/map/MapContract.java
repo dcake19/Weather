@@ -9,6 +9,7 @@ public class MapContract {
     interface View{
         void locationsReady(int size);
         void searchComplete(String name,double lat,double lng);
+        void error();
     }
 
     interface Presenter{
