@@ -22,7 +22,7 @@ public class InitalActivity extends AppCompatActivity {
         setContentView(R.layout.inital_activity);
         ButterKnife.bind(this);
 
-        //loadInitialSetup();
+       // loadInitialSetup();
     }
 
     @OnClick({R.id.btn_forecast_here,R.id.btn_my_locations,R.id.btn_show_on_map})

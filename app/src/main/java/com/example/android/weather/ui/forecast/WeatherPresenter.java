@@ -64,6 +64,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
         mStringLatitude = String.valueOf(latitude);
         mStringLongitude = String.valueOf(longitude);
 
+        if(name==null) name = WeatherActivity.DISPLAY_LAT_LNG;
         if(name.equals(WeatherActivity.DISPLAY_LAT_LNG)){
             mName = WeatherActivity.DISPLAY_LAT_LNG;
             mApiServiceLocation.getLocation(getLatLong(), BuildConfig.GEOCODING_API_KEY).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
@@ -212,10 +213,13 @@ public class WeatherPresenter implements WeatherContract.Presenter {
     }
 
     private String getPrecipDailyEmail(Context context,int position) {
-        String chance = Double.toString(mDaily.getData().get(position+1).getPrecipProbability()*100);
+        String chance = formatDoubleAsString(0,mDaily.getData().get(position+1).getPrecipProbability()*100);
+        String precipType = mDaily.getData().get(position+1).getPrecipType();
+        if(precipType == null) precipType = "rain";
+
         return chance + " pct."
                 + " " +context.getString(R.string.chance)
-                + " " + mDaily.getData().get(position+1).getPrecipType();
+                + " " + precipType;
     }
 
 
