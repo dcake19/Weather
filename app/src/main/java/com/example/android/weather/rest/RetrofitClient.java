@@ -9,15 +9,7 @@ public class RetrofitClient {
 
     private static Retrofit retrofit = null;
     private static Retrofit retrofitLocation = null;
-//    public static Retrofit getClient() {
-//        if (retrofit == null) {
-//            retrofit = new Retrofit.Builder()
-//                    .baseUrl("https://api.darksky.net")
-//                    .addConverterFactory(GsonConverterFactory.create())
-//                    .build();
-//        }
-//        return retrofit;
-//    }
+
 
     public static Retrofit getClient(){
         if (retrofit == null) {

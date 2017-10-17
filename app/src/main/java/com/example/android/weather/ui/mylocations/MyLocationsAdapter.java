@@ -95,7 +95,7 @@ public class MyLocationsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             }else if(view.getId() == displayed.getId()){
                 mPresenter.changedDisplayed(getAdapterPosition(),displayed.isChecked());
             }else{
-                mContext.startActivity(mPresenter.getIntentForWeatherActivity(mContext,getAdapterPosition()));
+                mActivity.startActivity(mPresenter.getIntentForWeatherActivity(mContext,getAdapterPosition()));
             }
 
         }

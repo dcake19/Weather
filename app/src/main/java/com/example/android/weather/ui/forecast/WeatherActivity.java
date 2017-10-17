@@ -92,13 +92,9 @@ public class WeatherActivity extends AppCompatActivity implements WeatherContrac
 
         mSpinnerDays.setEnabled(mDaily);
 
-       // if(savedInstanceState==null) {
+
         mPresenter = new WeatherPresenter(this,new WeatherRepository(getBaseContext()));
-      //      mPresenter = WeatherPresenterClient.getPresenter(true, this, new WeatherRepository(getBaseContext()));
-     //   }
-      //  else{
-      //      mPresenter = WeatherPresenterClient.getPresenter(false, this, new WeatherRepository(getBaseContext()));
-    //    }
+
 
         mButtonShare.setEnabled(false);
 

@@ -37,7 +37,6 @@ public class WeatherPresenter implements WeatherContract.Presenter {
     private WeatherRepository mRepository;
     private Daily mDaily;
     private Hourly mHourly;
-   // private boolean mShowDaily = true;
     private String mStringLatitude;
     private String mStringLongitude;
     private Double mLatitude;
@@ -49,12 +48,6 @@ public class WeatherPresenter implements WeatherContract.Presenter {
         mRepository = repository;
         mApiService = ApiUtils.getApiService();
         mApiServiceLocation = ApiUtils.getApiServiceLocation();
-    }
-
-    public void setViewAndRepository(WeatherContract.View view,WeatherRepository repository)
-    {
-        mView = view;
-        mRepository = repository;
     }
 
     @Override
