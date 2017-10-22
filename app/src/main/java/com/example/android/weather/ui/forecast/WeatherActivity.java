@@ -186,7 +186,6 @@ public class WeatherActivity extends AppCompatActivity implements WeatherContrac
     }
 
 
-
     @Override
     public void displayDaily(int day) {
         int initSelection = mSharedPreferences.getInt(INIT_SELECTION,6);

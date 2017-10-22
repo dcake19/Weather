@@ -30,16 +30,18 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
-        <activity android:name=".ui.mylocations.MyLocationsActivity">
+        <activity android:name=".ui.mylocations.MyLocationsActivity"
+                  android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".ui.InitalActivity">
+        <activity android:name=".ui.InitalActivity"
+                  android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <activity android:name=".ui.map.MapActivity"
+                  android:screenOrientation="portrait"
                   android:theme="@style/AppTheme.NoActionBar">
         </activity>
     </application>
