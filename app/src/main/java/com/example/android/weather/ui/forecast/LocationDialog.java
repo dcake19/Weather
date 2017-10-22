@@ -16,14 +16,22 @@ import com.example.android.weather.R;
 @SuppressLint("ValidFragment")
 public class LocationDialog extends DialogFragment implements View.OnClickListener{
 
-    WeatherActivity mWeatherActivity;
+   // WeatherActivity mWeatherActivity;
+    WeatherContract.Presenter mPresenter;
     private String mLatitude;
     private String mLongitude;
     private EditText mEditText;
     private String mName;
 
-    public LocationDialog(WeatherActivity activity,String name,String latitude, String longitude) {
-        mWeatherActivity = activity;
+//    public LocationDialog(WeatherActivity activity,String name,String latitude, String longitude) {
+//        mWeatherActivity = activity;
+//        mName = name;
+//        mLatitude = latitude;
+//        mLongitude = longitude;
+//    }
+
+    public LocationDialog(WeatherContract.Presenter presenter,String name,String latitude, String longitude) {
+        mPresenter = presenter;
         mName = name;
         mLatitude = latitude;
         mLongitude = longitude;
@@ -54,7 +62,8 @@ public class LocationDialog extends DialogFragment implements View.OnClickListen
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.btn_save:
-                mWeatherActivity.saveLocation(mEditText.getText().toString());
+                //mWeatherActivity.saveLocation(mEditText.getText().toString());
+                mPresenter.saveLocation(mEditText.getText().toString());
                 dismiss();
                 break;
             case  R.id.btn_dismiss:

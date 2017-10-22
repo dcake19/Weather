@@ -39,5 +39,11 @@ public class WeatherContract {
         String getWeatherSpeakHourly(int position);
         String getShareSubjectHourly(Context context);
         String getShareBodyHourly(Context context);
+
+        boolean getInitialDaily();
+        int getInitialSelection();
+        void saveDaily(boolean daily);
+        void saveSelection(int selection);
+
     }
 }

@@ -2,6 +2,7 @@ package com.example.android.weather.ui.forecast;
 
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.example.android.weather.BuildConfig;
@@ -35,6 +36,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
     private ApiService mApiService;
     private ApiServiceLocation mApiServiceLocation;
     private WeatherRepository mRepository;
+    private SharedPreferences mSharedPreferences;
     private Daily mDaily;
     private Hourly mHourly;
     private String mStringLatitude;
@@ -42,12 +44,15 @@ public class WeatherPresenter implements WeatherContract.Presenter {
     private Double mLatitude;
     private Double mLongitude;
     private String mName;
+    private final String INIT_SELECTION = "init_selection";
+    private final String DAILY_SELECTION = "daily_selection";
 
-    public WeatherPresenter(WeatherContract.View view,WeatherRepository repository) {
+    public WeatherPresenter(WeatherContract.View view, WeatherRepository repository, SharedPreferences sharedPreferences) {
         mView = view;
         mRepository = repository;
         mApiService = ApiUtils.getApiService();
         mApiServiceLocation = ApiUtils.getApiServiceLocation();
+        mSharedPreferences = sharedPreferences;
     }
 
     @Override
@@ -373,6 +378,30 @@ public class WeatherPresenter implements WeatherContract.Presenter {
         }
 
         return shareBody.toString();
+    }
+
+    @Override
+    public boolean getInitialDaily() {
+        return mSharedPreferences.getBoolean(DAILY_SELECTION,true);
+    }
+
+    @Override
+    public int getInitialSelection() {
+        return mSharedPreferences.getInt(INIT_SELECTION,6);
+    }
+
+    @Override
+    public void saveDaily(boolean daily) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(DAILY_SELECTION,daily);
+        editor.commit();
+    }
+
+    @Override
+    public void saveSelection(int selection) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putInt(INIT_SELECTION,selection);
+        editor.commit();
     }
 
     private String getSummaryHourly(int position){

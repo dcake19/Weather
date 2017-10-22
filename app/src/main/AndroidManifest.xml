@@ -24,7 +24,7 @@
             android:name=".db.WeatherProvider"
             android:authorities="com.example.android.weather"
             android:exported="false"/>
-<!-- android:screenOrientation="portrait"-->
+
         <activity
             android:name=".ui.forecast.WeatherActivity"
             android:screenOrientation="portrait"
