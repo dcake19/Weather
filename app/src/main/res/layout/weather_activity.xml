@@ -7,16 +7,5 @@
               android:layout_height="match_parent">
 
     <include layout="@layout/weather_appbar"/>
-<!--
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerview_weather"
-        android:layout_weight="1"
-        android:scrollbars="vertical"
-        android:layout_height="0dp"
-        android:layout_width="match_parent"
-        android:background="@color/colorBackground"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        >
-    </android.support.v7.widget.RecyclerView>
--->
+
 </LinearLayout>

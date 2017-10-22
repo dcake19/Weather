@@ -2,17 +2,23 @@ package com.example.android.weather.ui.map;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.os.Bundle;
 import android.speech.RecognizerIntent;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.example.android.weather.R;
+import com.example.android.weather.db.WeatherRepository;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -24,10 +30,11 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 
-public class MapFragment extends Fragment implements MapContract.View,
+public class LocationsMapFragment extends Fragment implements MapContract.View,
         OnMapReadyCallback,
         GoogleMap.OnMarkerClickListener{
 
@@ -42,6 +49,30 @@ public class MapFragment extends Fragment implements MapContract.View,
     @BindView(R.id.txt_search)
     EditText mSearchTerm;
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mPresenter = new MapPresenter(this,new WeatherRepository(getActivity()));
+        mMarkers = new ArrayList<>();
+
+        setRetainInstance(true);
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        View rootview = inflater.inflate(R.layout.map_fragment, container, false);
+        ButterKnife.bind(this,rootview);
+
+
+
+        MapFragment mapFragment = (MapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+        return rootview;
+    }
 
     @OnClick({R.id.btn_map,R.id.btn_terrain,R.id.btn_satellite})
     public void changeMap(View view){
@@ -66,17 +97,16 @@ public class MapFragment extends Fragment implements MapContract.View,
 
     @OnClick(R.id.fab_speak)
     public void speak(){
-        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.ENGLISH);
-        try{
-            startActivityForResult(intent,200);
-        }catch (ActivityNotFoundException e){
-
-        }
+//        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+//        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+//        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.ENGLISH);
+//        try{
+//            startActivityForResult(intent,200);
+//        }catch (ActivityNotFoundException e){
+//
+//        }
+        ((MapActivity)getActivity()).speak();
     }
-
-
 
 
     @Override
@@ -153,5 +183,9 @@ public class MapFragment extends Fragment implements MapContract.View,
                 .show();
     }
 
+    public void search(String searchTerm){
+        mSearchTerm.setText(searchTerm);
+        search();
+    }
 
 }
