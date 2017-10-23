@@ -70,7 +70,7 @@ public class WeatherFragment extends Fragment implements WeatherContract.View,
         mPresenter = new WeatherPresenter(this,new WeatherRepository(getContext()),
                 getContext().getSharedPreferences(SAVED_DATA, Context.MODE_PRIVATE));
 
-        ((WeatherActivity)getActivity()).setToolbarDetails();
+
 
         setRetainInstance(true);
     }
@@ -81,6 +81,8 @@ public class WeatherFragment extends Fragment implements WeatherContract.View,
 
         View rootview = inflater.inflate(R.layout.weather_fragment, container, false);
         ButterKnife.bind(this,rootview);
+
+        ((WeatherActivity)getActivity()).setToolbarDetails();
 
         setRecyclerView();
         setTextToSpeech();
@@ -94,6 +96,9 @@ public class WeatherFragment extends Fragment implements WeatherContract.View,
         if(lat!=200 && lng!=200){
             mPresenter.downloadForecast(name,lat,lng, ((WeatherActivity)getActivity()).getDaily());
 
+        }
+        else if(mLocationSet){
+            mPresenter.downloadForecast(((WeatherActivity)getActivity()).getDaily());
         }
         else {
             mThisLocation = true;
@@ -305,6 +310,8 @@ public class WeatherFragment extends Fragment implements WeatherContract.View,
             mTextToSpeech.stop();
             mTextToSpeech.shutdown();
         }
+
+        mPresenter.onPause();
 
         super.onPause();
     }

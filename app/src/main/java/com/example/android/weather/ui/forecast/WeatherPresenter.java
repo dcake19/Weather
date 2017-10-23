@@ -47,6 +47,9 @@ public class WeatherPresenter implements WeatherContract.Presenter {
     private final String INIT_SELECTION = "init_selection";
     private final String DAILY_SELECTION = "daily_selection";
 
+    private boolean mLocationSubscribed,mForecastSubscribed,mLocationComplete,mForecastComplete;
+    private boolean mPaused = true;
+
     public WeatherPresenter(WeatherContract.View view, WeatherRepository repository, SharedPreferences sharedPreferences) {
         mView = view;
         mRepository = repository;
@@ -63,6 +66,8 @@ public class WeatherPresenter implements WeatherContract.Presenter {
     @Override
     public void downloadForecast(String name,double latitude,double longitude,final boolean daily) {
 
+        mPaused = false;
+
         mLatitude = latitude;
         mLongitude = longitude;
 
@@ -72,47 +77,11 @@ public class WeatherPresenter implements WeatherContract.Presenter {
         if(name==null || name.equals("")) name = WeatherActivity.DISPLAY_LAT_LNG;
         if(name.equals(WeatherActivity.DISPLAY_LAT_LNG)){
             mName = WeatherActivity.DISPLAY_LAT_LNG;
-            mApiServiceLocation.getLocation(getLatLong(), BuildConfig.GEOCODING_API_KEY).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Observer<CitySearchResults>(){
-                        @Override
-                        public void onSubscribe(Disposable d) {
 
-                        }
-
-                        @Override
-                        public void onNext(CitySearchResults citySearchResults) {
-                            if(citySearchResults.getResults().size() >= 1) {
-                                List<AddressComponent> addressComponent = citySearchResults.getResults().get(0).getAddressComponents();
-
-                                boolean nameFound = false;
-                                int i=0;
-                                while(!nameFound && i<addressComponent.size()){
-                                    List<String> types = addressComponent.get(i).getTypes();
-                                    for(int j=0;j<types.size();j++){
-                                        if(types.get(j).equals("locality") || types.get(j).equals("political") || types.get(j).equals("postal_town")) {
-                                            mName = addressComponent.get(i).getShortName();
-                                            nameFound = true;
-                                            break;
-                                        }
-                                    }
-                                    i++;
-                                }
-                            }
-                            mView.setName(mName);
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-                            mName = "";
-                            mView.setName(getLatLong());
-                        }
-
-                        @Override
-                        public void onComplete() {
-
-                        }
-                    });
-
+            if(mLocationSubscribed && mLocationComplete)
+                mView.setName(mName);
+            else if (!mLocationSubscribed)
+                subscribeLocationName();
 
 
         }else{
@@ -121,33 +90,99 @@ public class WeatherPresenter implements WeatherContract.Presenter {
         }
 
 
+        if (mForecastSubscribed && mForecastComplete) {
+            displayForecast(daily);
+        }
+        else if (!mForecastSubscribed) {
+            subscribeForecast(daily);
+        }
+
+
+    }
+
+
+    private void subscribeLocationName(){
+        mApiServiceLocation.getLocation(getLatLong(), BuildConfig.GEOCODING_API_KEY).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<CitySearchResults>(){
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        mLocationSubscribed = true;
+                    }
+
+                    @Override
+                    public void onNext(CitySearchResults citySearchResults) {
+                        if(citySearchResults.getResults().size() >= 1) {
+                            List<AddressComponent> addressComponent = citySearchResults.getResults().get(0).getAddressComponents();
+
+                            boolean nameFound = false;
+                            int i=0;
+                            while(!nameFound && i<addressComponent.size()){
+                                List<String> types = addressComponent.get(i).getTypes();
+                                for(int j=0;j<types.size();j++){
+                                    if(types.get(j).equals("locality") || types.get(j).equals("political") || types.get(j).equals("postal_town")) {
+                                        mName = addressComponent.get(i).getShortName();
+                                        nameFound = true;
+                                        break;
+                                    }
+                                }
+                                i++;
+                            }
+                        }
+
+                        if(!mPaused) mView.setName(mName);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mLocationSubscribed = false;
+                        mName = "";
+                        mView.setName(getLatLong());
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        mLocationComplete = true;
+                    }
+                });
+    }
+
+    private void subscribeForecast(final boolean daily){
         mApiService.getForecast(getLatLong()).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<WeatherForecast>() {
                     @Override
                     public void onSubscribe(Disposable d) {
+                        mForecastSubscribed = true;
                     }
 
                     @Override
                     public void onNext(WeatherForecast weatherForecast) {
                         mDaily = weatherForecast.getDaily();
                         mHourly = weatherForecast.getHourly();
-                        if(daily)
-                            mView.displayDaily(mDaily.getData().size());
-                        else
-                           mView.displayHourly(mHourly.getData().size());
 
+                        displayForecast(daily);
                     }
 
                     @Override
                     public void onError(Throwable e) {
+                        mForecastSubscribed = false;
                         mView.error();
                     }
 
                     @Override
                     public void onComplete() {
-
+                        mForecastComplete = true;
                     }
                 });
+    }
+
+    private void displayForecast(boolean daily){
+        if(!mPaused) {
+            if (daily)
+                mView.displayDaily(mDaily.getData().size());
+            else
+                mView.displayHourly(mHourly.getData().size());
+
+        }
     }
 
     @Override
@@ -402,6 +437,11 @@ public class WeatherPresenter implements WeatherContract.Presenter {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putInt(INIT_SELECTION,selection);
         editor.commit();
+    }
+
+    @Override
+    public void onPause() {
+        mPaused = true;
     }
 
     private String getSummaryHourly(int position){

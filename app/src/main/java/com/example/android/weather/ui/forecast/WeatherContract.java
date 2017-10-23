@@ -45,5 +45,7 @@ public class WeatherContract {
         void saveDaily(boolean daily);
         void saveSelection(int selection);
 
+        void onPause();
+
     }
 }

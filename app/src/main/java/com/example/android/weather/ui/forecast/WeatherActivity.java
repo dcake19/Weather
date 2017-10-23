@@ -50,6 +50,8 @@ public class WeatherActivity extends AppCompatActivity {
     public static final String LONGITUDE = "longitude";
     public static final String DISPLAY_LAT_LNG = "display_lat_lng";
 
+    private final String SAVE_DAILY = "save_daily";
+
     @BindView(R.id.location_name) TextView mLocationName;
     @BindView(R.id.spinner_number_days) Spinner mSpinnerDays;
     @BindView(R.id.btn_share) ImageButton mButtonShare;
@@ -59,12 +61,18 @@ public class WeatherActivity extends AppCompatActivity {
 
     private boolean mDaily = true;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.weather_activity);
 
         ButterKnife.bind(this);
+
+
+        if(savedInstanceState!=null)
+            mDaily = savedInstanceState.getBoolean(SAVE_DAILY,true);
+
 
         FragmentManager fm = getSupportFragmentManager();
         mFragment = (WeatherFragment) fm.findFragmentByTag(FRAGMENT);
@@ -109,7 +117,9 @@ public class WeatherActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if(mInitialized) {
-                    mFragment.setAdapterSize(position+1);
+                    if(mDaily)
+                        mFragment.setAdapterSize(position+1);
+
                 }
                 mInitialized = true;
             }
@@ -165,12 +175,20 @@ public class WeatherActivity extends AppCompatActivity {
     }
 
 
-    public static Intent getIntent(Context context,String name, double latitude, double longitude){
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(SAVE_DAILY,mDaily);
+    }
+
+    public static Intent getIntent(Context context, String name, double latitude, double longitude){
         Intent intent = new Intent(context, WeatherActivity.class);
         intent.putExtra(NAME,name);
         intent.putExtra(LATITUDE,latitude);
         intent.putExtra(LONGITUDE,longitude);
         return intent;
     }
+
+
 
 }
