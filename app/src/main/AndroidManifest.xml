@@ -30,8 +30,7 @@
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
-        <activity android:name=".ui.mylocations.MyLocationsActivity"
-                  android:screenOrientation="portrait">
+        <activity android:name=".ui.mylocations.MyLocationsActivity">
         </activity>
 
         <activity android:name=".ui.InitalActivity"
@@ -43,7 +42,6 @@
         </activity>
 
         <activity android:name=".ui.map.MapActivity"
-
                   android:theme="@style/AppTheme.NoActionBar">
         </activity>
 

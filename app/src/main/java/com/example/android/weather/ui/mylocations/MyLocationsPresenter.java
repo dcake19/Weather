@@ -25,6 +25,7 @@ public class MyLocationsPresenter implements MyLocationsContract.Presenter{
     private MyLocationsContract.View mView;
     private WeatherRepository mRepository;
     private ArrayList<Location> mLocations;
+    private boolean mSubscribed,mComplete;
 
     public MyLocationsPresenter(MyLocationsContract.View view, WeatherRepository repository) {
         mView = view;
@@ -33,23 +34,30 @@ public class MyLocationsPresenter implements MyLocationsContract.Presenter{
 
     @Override
     public void getLocations() {
-        Observable<ArrayList<Location>> observable = Observable.create(new ObservableOnSubscribe<ArrayList<Location>>() {
-            @Override
-            public void subscribe(ObservableEmitter<ArrayList<Location>> e) throws Exception {
-                e.onNext(mRepository.getLoactions());
-            }
-        });
+        if(mComplete){
+            mView.displayLocations(mLocations.size());
+        }
+        else if(!mSubscribed) {
+            Observable<ArrayList<Location>> observable = Observable.create(new ObservableOnSubscribe<ArrayList<Location>>() {
+                @Override
+                public void subscribe(ObservableEmitter<ArrayList<Location>> e) throws Exception {
+                    mSubscribed = true;
+                    e.onNext(mRepository.getLoactions());
+                }
+            });
 
-        Consumer<ArrayList<Location>> consumer = new Consumer<ArrayList<Location>>() {
-            @Override
-            public void accept(@NonNull ArrayList<Location> locations) throws Exception {
-                mLocations = locations;
-                mView.displayLocations(mLocations.size());
-            }
-        };
+            Consumer<ArrayList<Location>> consumer = new Consumer<ArrayList<Location>>() {
+                @Override
+                public void accept(@NonNull ArrayList<Location> locations) throws Exception {
+                    mLocations = locations;
+                    mView.displayLocations(mLocations.size());
+                    mComplete = true;
+                }
+            };
 
-        observable.subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread()).subscribe(consumer);
+            observable.subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread()).subscribe(consumer);
+        }
     }
 
     @Override
@@ -86,7 +94,6 @@ public class MyLocationsPresenter implements MyLocationsContract.Presenter{
             }
         };
         thread.start();
-
     }
 
     @Override
@@ -98,7 +105,6 @@ public class MyLocationsPresenter implements MyLocationsContract.Presenter{
             }
         };
         thread.start();
-
     }
 
     @Override

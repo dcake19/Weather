@@ -48,7 +48,6 @@ public class WeatherPresenter implements WeatherContract.Presenter {
     private final String DAILY_SELECTION = "daily_selection";
 
     private boolean mLocationSubscribed,mForecastSubscribed,mLocationComplete,mForecastComplete;
-    private boolean mPaused = true;
 
     public WeatherPresenter(WeatherContract.View view, WeatherRepository repository, SharedPreferences sharedPreferences) {
         mView = view;
@@ -66,8 +65,6 @@ public class WeatherPresenter implements WeatherContract.Presenter {
     @Override
     public void downloadForecast(String name,double latitude,double longitude,final boolean daily) {
 
-        mPaused = false;
-
         mLatitude = latitude;
         mLongitude = longitude;
 
@@ -82,13 +79,10 @@ public class WeatherPresenter implements WeatherContract.Presenter {
                 mView.setName(mName);
             else if (!mLocationSubscribed)
                 subscribeLocationName();
-
-
         }else{
             mName = name;
             mView.setName(mName);
         }
-
 
         if (mForecastSubscribed && mForecastComplete) {
             displayForecast(daily);
@@ -96,10 +90,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
         else if (!mForecastSubscribed) {
             subscribeForecast(daily);
         }
-
-
     }
-
 
     private void subscribeLocationName(){
         mApiServiceLocation.getLocation(getLatLong(), BuildConfig.GEOCODING_API_KEY).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
@@ -128,8 +119,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
                                 i++;
                             }
                         }
-
-                        if(!mPaused) mView.setName(mName);
+                        mView.setName(mName);
                     }
 
                     @Override
@@ -176,13 +166,10 @@ public class WeatherPresenter implements WeatherContract.Presenter {
     }
 
     private void displayForecast(boolean daily){
-        if(!mPaused) {
-            if (daily)
-                mView.displayDaily(mDaily.getData().size());
-            else
-                mView.displayHourly(mHourly.getData().size());
-
-        }
+        if (daily)
+            mView.displayDaily(mDaily.getData().size());
+        else
+            mView.displayHourly(mHourly.getData().size());
     }
 
     @Override
@@ -437,11 +424,6 @@ public class WeatherPresenter implements WeatherContract.Presenter {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putInt(INIT_SELECTION,selection);
         editor.commit();
-    }
-
-    @Override
-    public void onPause() {
-        mPaused = true;
     }
 
     private String getSummaryHourly(int position){

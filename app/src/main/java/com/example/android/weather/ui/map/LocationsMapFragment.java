@@ -133,10 +133,14 @@ public class LocationsMapFragment extends Fragment implements MapContract.View,
                 mMarkers.add(new MarkerOptions()
                         .position(new LatLng(mPresenter.getLatitude(i), mPresenter.getLongitude(i))));
                 mMarkers.get(i).title(Integer.toString(i));
-                mMap.addMarker(mMarkers.get(i));
                 builder.include(mMarkers.get(i).getPosition());
             }
         }
+
+        for (int i = 0; i < size; i++) {
+            mMap.addMarker(mMarkers.get(i));
+        }
+
         mMap.setOnMarkerClickListener(this);
 
         if(mCameraPosition != null){

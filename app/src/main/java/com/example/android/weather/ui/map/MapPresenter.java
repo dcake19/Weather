@@ -36,6 +36,7 @@ public class MapPresenter implements MapContract.Presenter{
     private String mLastSearchedName = "";
     private double mLastSearchedLat;
     private double mLastSearchedLng;
+    private boolean mSubscribed,mComplete;
 
     public MapPresenter( MapContract.View view,WeatherRepository repository) {
         mRepository = repository;
@@ -45,24 +46,30 @@ public class MapPresenter implements MapContract.Presenter{
 
     @Override
     public void getLocations() {
-        Observable<ArrayList<Location>> observable = Observable.create(new ObservableOnSubscribe<ArrayList<Location>>() {
-            @Override
-            public void subscribe(ObservableEmitter<ArrayList<Location>> e) throws Exception {
-                e.onNext(mRepository.getLoactionsForMap());
-            }
-        });
+        if(mComplete){
+            mView.locationsReady(mLocations.size());
+        }
+        else if(!mSubscribed) {
+            Observable<ArrayList<Location>> observable = Observable.create(new ObservableOnSubscribe<ArrayList<Location>>() {
+                @Override
+                public void subscribe(ObservableEmitter<ArrayList<Location>> e) throws Exception {
+                    mSubscribed = true;
+                    e.onNext(mRepository.getLoactionsForMap());
+                }
+            });
 
-        Consumer<ArrayList<Location>> consumer = new Consumer<ArrayList<Location>>() {
-            @Override
-            public void accept(@NonNull ArrayList<Location> locations) throws Exception {
-                mLocations = locations;
-                mView.locationsReady(mLocations.size());
-            }
-        };
+            Consumer<ArrayList<Location>> consumer = new Consumer<ArrayList<Location>>() {
+                @Override
+                public void accept(@NonNull ArrayList<Location> locations) throws Exception {
+                    mLocations = locations;
+                    mView.locationsReady(mLocations.size());
+                    mComplete = true;
+                }
+            };
 
-
-        observable.subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread()).subscribe(consumer);
+            observable.subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread()).subscribe(consumer);
+        }
     }
 
     @Override
@@ -111,7 +118,6 @@ public class MapPresenter implements MapContract.Presenter{
                                 }
                                 i++;
                             }
-
                         }
                         mLastSearchedLat = citySearchResults.getResults().get(0).getGeometry().getLocation().getLat();
                         mLastSearchedLng = citySearchResults.getResults().get(0).getGeometry().getLocation().getLng();

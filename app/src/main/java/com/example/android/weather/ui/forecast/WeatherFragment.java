@@ -311,8 +311,6 @@ public class WeatherFragment extends Fragment implements WeatherContract.View,
             mTextToSpeech.shutdown();
         }
 
-        mPresenter.onPause();
-
         super.onPause();
     }
 
