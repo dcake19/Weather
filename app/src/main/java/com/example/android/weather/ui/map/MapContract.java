@@ -19,5 +19,8 @@ public class MapContract {
         Intent getIntentForWeatherActivity(Context context,int position);
         void searchForLocation(String location);
         void saveSearchedTerm(String name,double lat,double lng);
+        String getLastSearchedName();
+        double getLastSearchedLat();
+        double getLastSearchedLng();
     }
 }

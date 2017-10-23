@@ -60,6 +60,7 @@ public class MapPresenter implements MapContract.Presenter{
             }
         };
 
+
         observable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread()).subscribe(consumer);
     }
@@ -144,4 +145,18 @@ public class MapPresenter implements MapContract.Presenter{
     }
 
 
+    @Override
+    public String getLastSearchedName() {
+        return mLastSearchedName;
+    }
+
+    @Override
+    public double getLastSearchedLat() {
+        return mLastSearchedLat;
+    }
+
+    @Override
+    public double getLastSearchedLng() {
+        return mLastSearchedLng;
+    }
 }

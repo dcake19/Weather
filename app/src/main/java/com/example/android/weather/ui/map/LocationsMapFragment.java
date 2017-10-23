@@ -35,6 +35,14 @@ public class LocationsMapFragment extends Fragment implements MapContract.View,
         OnMapReadyCallback,
         GoogleMap.OnMarkerClickListener{
 
+    private final String SAVE_MAP_TYPE = "map_type";
+    private int mMapType = GoogleMap.MAP_TYPE_NORMAL;
+
+    private final String SAVE_CAMERA_POSITION = "camera_position";
+    private CameraPosition mCameraPosition;
+
+    private final String SAVE_LOCATION_SNACKBAR = "location_snackbar";
+
     private MapContract.Presenter mPresenter;
 
     private GoogleMap mMap;
@@ -45,6 +53,8 @@ public class LocationsMapFragment extends Fragment implements MapContract.View,
     LinearLayout mLayout;
     @BindView(R.id.txt_search)
     EditText mSearchTerm;
+
+    private Snackbar mLocationSnackbar;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -63,8 +73,18 @@ public class LocationsMapFragment extends Fragment implements MapContract.View,
         View rootview = inflater.inflate(R.layout.map_fragment, container, false);
         ButterKnife.bind(this,rootview);
 
+        if(savedInstanceState!=null) {
+            mMapType = savedInstanceState.getInt(SAVE_MAP_TYPE, GoogleMap.MAP_TYPE_NORMAL);
+            mCameraPosition = savedInstanceState.getParcelable(SAVE_CAMERA_POSITION);
+            if(savedInstanceState.getBoolean(SAVE_LOCATION_SNACKBAR,false))
+                showLocationSnackbar(mPresenter.getLastSearchedName(),
+                        mPresenter.getLastSearchedLat(),
+                        mPresenter.getLastSearchedLng());
+        }
+
         MapFragment mapFragment = (MapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
 
         return rootview;
     }
@@ -92,14 +112,6 @@ public class LocationsMapFragment extends Fragment implements MapContract.View,
 
     @OnClick(R.id.fab_speak)
     public void speak(){
-//        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-//        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-//        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.ENGLISH);
-//        try{
-//            startActivityForResult(intent,200);
-//        }catch (ActivityNotFoundException e){
-//
-//        }
         ((MapActivity)getActivity()).speak();
     }
 
@@ -107,25 +119,30 @@ public class LocationsMapFragment extends Fragment implements MapContract.View,
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setMapType(mMapType);
         mReady = true;
         mPresenter.getLocations();
-
     }
 
     @Override
     public void locationsReady(int size) {
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
-        for(int i=0;i<size;i++){
-            mMarkers.add(new MarkerOptions()
-                    .position(new LatLng(mPresenter.getLatitude(i),mPresenter.getLongitude(i))));
-            mMarkers.get(i).title(Integer.toString(i));
-            mMap.addMarker(mMarkers.get(i));
-            builder.include(mMarkers.get(i).getPosition());
+        if(mMarkers.size()==0) {
+            for (int i = 0; i < size; i++) {
+                mMarkers.add(new MarkerOptions()
+                        .position(new LatLng(mPresenter.getLatitude(i), mPresenter.getLongitude(i))));
+                mMarkers.get(i).title(Integer.toString(i));
+                mMap.addMarker(mMarkers.get(i));
+                builder.include(mMarkers.get(i).getPosition());
+            }
         }
-
         mMap.setOnMarkerClickListener(this);
-        if(mMarkers.size()>0) {
+
+        if(mCameraPosition != null){
+            mMap.moveCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
+        }
+        else if(mMarkers.size()>0) {
             int padding = 120; // offset from edges of the map in pixels
             CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(builder.build(), padding);
             mMap.moveCamera(cu);
@@ -138,7 +155,11 @@ public class LocationsMapFragment extends Fragment implements MapContract.View,
         CameraPosition target = CameraPosition.builder().target(new LatLng(lat,lng)).zoom(10).build();
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(target));
 
-        Snackbar.make(mLayout, getResources().getString(R.string.add_to_my_locations), Snackbar.LENGTH_INDEFINITE)
+        showLocationSnackbar(name, lat, lng);
+    }
+
+    private void showLocationSnackbar(final String name, final double lat, final double lng){
+        mLocationSnackbar = Snackbar.make(mLayout, getResources().getString(R.string.add_to_my_locations), Snackbar.LENGTH_INDEFINITE)
                 .setAction(getResources().getString(android.R.string.yes),
                         new View.OnClickListener(){
                             @Override
@@ -150,8 +171,9 @@ public class LocationsMapFragment extends Fragment implements MapContract.View,
                                 mMap.addMarker(mMarkers.get(last));
                             }
                         }
-                )
-                .show();
+                );
+
+        mLocationSnackbar.show();
     }
 
     @Override
@@ -183,4 +205,15 @@ public class LocationsMapFragment extends Fragment implements MapContract.View,
         search();
     }
 
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(SAVE_MAP_TYPE,mMap.getMapType());
+        outState.putParcelable(SAVE_CAMERA_POSITION,mMap.getCameraPosition());
+        if(mLocationSnackbar!=null)
+            outState.putBoolean(SAVE_LOCATION_SNACKBAR,mLocationSnackbar.isShown());
+        else
+            outState.putBoolean(SAVE_LOCATION_SNACKBAR,false);
+    }
 }
