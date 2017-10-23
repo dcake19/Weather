@@ -1,27 +1,22 @@
 package com.example.android.weather.ui.mylocations;
 
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 
 import com.example.android.weather.R;
-import com.example.android.weather.db.WeatherRepository;
-import com.example.android.weather.ui.forecast.WeatherDisplayAdapter;
-import com.example.android.weather.ui.mylocations.MyLocationsContract;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+public class MyLocationsActivity extends AppCompatActivity {
 
+//    MyLocationsContract.Presenter mPresenter;
+//    MyLocationsAdapter mAdapter;
+//
+//    @BindView(R.id.recyclerview_locations)
+//    RecyclerView mRecyclerView;
 
-public class MyLocationsActivity extends AppCompatActivity  implements MyLocationsContract.View{
-
-    MyLocationsContract.Presenter mPresenter;
-    MyLocationsAdapter mAdapter;
-
-    @BindView(R.id.recyclerview_locations)
-    RecyclerView mRecyclerView;
+    private final String FRAGMENT = "My Locations Fragment";
+    private MyLocationsFragment mFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,25 +25,36 @@ public class MyLocationsActivity extends AppCompatActivity  implements MyLocatio
 
         getSupportActionBar().setTitle(getResources().getString(R.string.my_locations));
 
-        ButterKnife.bind(this);
+        FragmentManager fm = getSupportFragmentManager();
+        mFragment = (MyLocationsFragment) fm.findFragmentByTag(FRAGMENT);
 
-        mPresenter = new MyLocationsPresenter(this,new WeatherRepository(getBaseContext()));
-        setRecyclerView();
+        if(mFragment==null) {
+            mFragment = new MyLocationsFragment();
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
 
-        mPresenter.getLocations();
+            fragmentTransaction.add(R.id.my_locations_content, mFragment, FRAGMENT);
+            fragmentTransaction.commit();
+        }
+
+      //  ButterKnife.bind(this);
+
+     //   mPresenter = new MyLocationsPresenter(this,new WeatherRepository(getBaseContext()));
+   //     setRecyclerView();
+
+      //  mPresenter.getLocations();
     }
 
-
-    private void setRecyclerView(){
-        mAdapter = new MyLocationsAdapter(this,getBaseContext(),mPresenter);
-        mRecyclerView.setAdapter(mAdapter);
-        GridLayoutManager glm = new GridLayoutManager(this,1);
-        mRecyclerView.setLayoutManager(glm);
-    }
-
-
-    @Override
-    public void displayLocations(int size) {
-        mAdapter.setSize(size);
-    }
+//
+//    private void setRecyclerView(){
+//        mAdapter = new MyLocationsAdapter(this,getBaseContext(),mPresenter);
+//        mRecyclerView.setAdapter(mAdapter);
+//        GridLayoutManager glm = new GridLayoutManager(this,1);
+//        mRecyclerView.setLayoutManager(glm);
+//    }
+//
+//
+//    @Override
+//    public void displayLocations(int size) {
+//        mAdapter.setSize(size);
+//    }
 }

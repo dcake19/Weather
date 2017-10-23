@@ -66,8 +66,6 @@ public class LocationsMapFragment extends Fragment implements MapContract.View,
         View rootview = inflater.inflate(R.layout.map_fragment, container, false);
         ButterKnife.bind(this,rootview);
 
-
-
         MapFragment mapFragment = (MapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
