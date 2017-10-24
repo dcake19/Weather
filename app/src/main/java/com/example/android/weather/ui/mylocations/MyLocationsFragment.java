@@ -29,7 +29,7 @@ public class MyLocationsFragment extends Fragment implements MyLocationsContract
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mPresenter = new MyLocationsPresenter(this,new WeatherRepository(getContext()));
+        mPresenter = new MyLocationsPresenter(this,new WeatherRepository(getActivity().getApplicationContext()));
 
     }
 

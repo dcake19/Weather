@@ -60,7 +60,7 @@ public class LocationsMapFragment extends Fragment implements MapContract.View,
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mPresenter = new MapPresenter(this,new WeatherRepository(getActivity()));
+        mPresenter = new MapPresenter(this,new WeatherRepository(getActivity().getApplicationContext()));
         mMarkers = new ArrayList<>();
 
         setRetainInstance(true);

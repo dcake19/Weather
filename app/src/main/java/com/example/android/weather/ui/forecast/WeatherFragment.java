@@ -67,9 +67,8 @@ public class WeatherFragment extends Fragment implements WeatherContract.View,
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mPresenter = new WeatherPresenter(this,new WeatherRepository(getContext()),
-                getContext().getSharedPreferences(SAVED_DATA, Context.MODE_PRIVATE));
-
+        mPresenter = new WeatherPresenter(this,new WeatherRepository(getActivity().getApplicationContext()),
+                getActivity().getApplicationContext().getSharedPreferences(SAVED_DATA, Context.MODE_PRIVATE));
 
 
         setRetainInstance(true);
