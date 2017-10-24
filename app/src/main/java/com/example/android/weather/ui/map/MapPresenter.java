@@ -4,6 +4,7 @@ package com.example.android.weather.ui.map;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.util.Pair;
 
 import com.example.android.weather.BuildConfig;
 import com.example.android.weather.db.Location;
@@ -25,6 +26,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 public class MapPresenter implements MapContract.Presenter{
@@ -92,16 +94,15 @@ public class MapPresenter implements MapContract.Presenter{
 
     @Override
     public void searchForLocation(String location) {
-
-        mApiServiceLocation.getLocation(location, BuildConfig.GEOCODING_API_KEY).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<CitySearchResults>(){
+        mApiServiceLocation.getLocation(location, BuildConfig.GEOCODING_API_KEY)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map(new Function<CitySearchResults, Pair<String,Double[]>>() {
                     @Override
-                    public void onSubscribe(Disposable d) {
+                    public Pair<String,Double[]> apply(CitySearchResults citySearchResults) throws Exception {
+                        String name = "";
+                        Double[] latLng = new Double[2];
 
-                    }
-
-                    @Override
-                    public void onNext(CitySearchResults citySearchResults) {
                         if(citySearchResults.getResults().size() >= 1) {
                             List<AddressComponent> addressComponent = citySearchResults.getResults().get(0).getAddressComponents();
 
@@ -111,7 +112,7 @@ public class MapPresenter implements MapContract.Presenter{
                                 List<String> types = addressComponent.get(i).getTypes();
                                 for(int j=0;j<types.size();j++){
                                     if(types.get(j).equals("locality") || types.get(j).equals("political") || types.get(j).equals("postal_town")) {
-                                        mLastSearchedName = addressComponent.get(i).getShortName();
+                                        name = addressComponent.get(i).getShortName();
                                         nameFound = true;
                                         break;
                                     }
@@ -119,8 +120,21 @@ public class MapPresenter implements MapContract.Presenter{
                                 i++;
                             }
                         }
-                        mLastSearchedLat = citySearchResults.getResults().get(0).getGeometry().getLocation().getLat();
-                        mLastSearchedLng = citySearchResults.getResults().get(0).getGeometry().getLocation().getLng();
+                        latLng[0] = citySearchResults.getResults().get(0).getGeometry().getLocation().getLat();
+                        latLng[1] = citySearchResults.getResults().get(0).getGeometry().getLocation().getLng();
+                        return new Pair<String, Double[]>(name,latLng);
+                    }
+                })
+                .subscribe(new Observer<Pair<String, Double[]>>(){
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                    }
+
+                    @Override
+                    public void onNext(Pair<String, Double[]> location) {
+                        mLastSearchedName = location.first;
+                        mLastSearchedLat = location.second[0];
+                        mLastSearchedLng = location.second[1];
                         mView.searchComplete(mLastSearchedName,mLastSearchedLat,mLastSearchedLng);
                     }
 
@@ -134,7 +148,6 @@ public class MapPresenter implements MapContract.Presenter{
 
                     }
                 });
-
     }
 
     @Override

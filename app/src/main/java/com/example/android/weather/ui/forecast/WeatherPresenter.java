@@ -27,6 +27,8 @@ import java.util.List;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.BiFunction;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 
@@ -93,15 +95,13 @@ public class WeatherPresenter implements WeatherContract.Presenter {
     }
 
     private void subscribeLocationName(){
-        mApiServiceLocation.getLocation(getLatLong(), BuildConfig.GEOCODING_API_KEY).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<CitySearchResults>(){
+        mApiServiceLocation.getLocation(getLatLong(), BuildConfig.GEOCODING_API_KEY)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map(new Function<CitySearchResults, String>() {
                     @Override
-                    public void onSubscribe(Disposable d) {
-                        mLocationSubscribed = true;
-                    }
-
-                    @Override
-                    public void onNext(CitySearchResults citySearchResults) {
+                    public String apply(CitySearchResults citySearchResults) throws Exception {
+                        String name = "";
                         if(citySearchResults.getResults().size() >= 1) {
                             List<AddressComponent> addressComponent = citySearchResults.getResults().get(0).getAddressComponents();
 
@@ -111,7 +111,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
                                 List<String> types = addressComponent.get(i).getTypes();
                                 for(int j=0;j<types.size();j++){
                                     if(types.get(j).equals("locality") || types.get(j).equals("political") || types.get(j).equals("postal_town")) {
-                                        mName = addressComponent.get(i).getShortName();
+                                        name = addressComponent.get(i).getShortName();
                                         nameFound = true;
                                         break;
                                     }
@@ -119,6 +119,20 @@ public class WeatherPresenter implements WeatherContract.Presenter {
                                 i++;
                             }
                         }
+
+                       return name;
+                    }
+                })
+                .subscribe(new Observer<String>(){
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        mLocationSubscribed = true;
+                    }
+
+                    @Override
+                    public void onNext(String locationName) {
+
+                        mName = locationName;
                         mView.setName(mName);
                     }
 

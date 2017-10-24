@@ -84,8 +84,8 @@ public class WeatherFragment extends Fragment implements WeatherContract.View,
 
         ((WeatherActivity)getActivity()).setToolbarDetails();
 
-        setRecyclerView();
         setTextToSpeech();
+        setRecyclerView();
 
         Intent intent = getActivity().getIntent();
 
