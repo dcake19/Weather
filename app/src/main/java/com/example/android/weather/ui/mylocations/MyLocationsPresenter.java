@@ -98,6 +98,7 @@ public class MyLocationsPresenter implements MyLocationsContract.Presenter{
 
     @Override
     public void changedDisplayed(final int position,final boolean display) {
+        mLocations.get(position).display = display;
         Thread thread = new Thread() {
             @Override
             public void run() {
